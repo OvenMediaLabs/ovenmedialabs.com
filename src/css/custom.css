@@ -2512,6 +2512,9 @@ html.plugin-blog.blog-post-page .theme-blog-footer-edit-meta-row [class*='tag_']
   animation-delay: 0.5s;
 }
 .x264-box { transition: border-color 0.25s ease, filter 0.25s ease; }
+.reseller-card-logo { height: clamp(25px, 3.5vw, 33px); width: auto; object-fit: contain; }
+.reseller-card-logo-lg { height: clamp(36px, 5vw, 52px); }
+
 .enterprise-part { background: linear-gradient(to bottom, var(--bg-body) 0%, var(--bg-dark) 100%); }
 .enterprise-part > .full-page-section.bg-body { background: transparent !important; }
 .aws-part { background: linear-gradient(to bottom, var(--bg-middle) 0%, var(--bg-dark) 100%); }
