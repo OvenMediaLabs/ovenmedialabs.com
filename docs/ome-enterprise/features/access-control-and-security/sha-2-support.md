@@ -11,14 +11,19 @@ You can flexibly configure the environment and performance by directly selecting
 
 ## SHA-2 Settings
 
-`SHA-2` is available for use with `<Alert>`, `<SignedPolicy>`, and `<AdmissionWebhooks>`, and can be configured in Server.xml as follows:
+`SHA-2` is available for use with `<Alert>` (per `<Webhook>`), `<SignedPolicy>`, and `<AdmissionWebhooks>`, and can be configured in Server.xml as follows:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Server version="8">
   ...
   <Alert>
-    <HashAlgorithm>SHA-256</HashAlgorithm>
+    <Webhooks>
+      <Webhook>
+        <HashAlgorithm>SHA-256</HashAlgorithm>
+        ...
+      </Webhook>
+    </Webhooks>
     ...
   </Alert>
   ...

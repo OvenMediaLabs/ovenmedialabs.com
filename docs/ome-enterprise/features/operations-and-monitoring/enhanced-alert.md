@@ -14,9 +14,18 @@ Enhanced Alert can be set up on `<Server>`, as shown below:
 ```xml
 <Server version="8">
 	<Alert>
-		<Url>http://192.168.0.161:9595/alert/notification</Url>
-		<SecretKey>1234</SecretKey>
-		<Timeout>3000</Timeout>
+		<Webhooks>
+			<Webhook>
+				<Url>http://192.168.0.161:9595/alert/notification</Url>
+				<SecretKey>1234</SecretKey>
+				<Timeout>3000</Timeout>
+			</Webhook>
+			<Webhook>
+				<Url>http://192.168.0.162:9595/alert/notification</Url>
+				<SecretKey>5678</SecretKey>
+				<HashAlgorithm>SHA-256</HashAlgorithm>
+			</Webhook>
+		</Webhooks>
 		<RulesFile>AlertRules.xml</RulesFile>
 		<Rules>
 			<Ingress>
@@ -45,7 +54,27 @@ Enhanced Alert can be set up on `<Server>`, as shown below:
 </Server>
 ```
 
-<table><thead><tr><th width="139.55560302734375">Key</th><th>Description</th></tr></thead><tbody><tr><td>Url</td><td><p>The HTTP Server is to receive the notification.</p><ul><li>HTTP and HTTPS are available.</li></ul></td></tr><tr><td>SecretKey</td><td>The secret key used when encrypting with HMAC-SHA1. For more information, see <a href="enhanced-alert.md#security">Security</a>.</td></tr><tr><td>Timeout</td><td>Time to wait for a response after the request. (in milliseconds).</td></tr><tr><td>RulesFile</td><td>(Optional) Manages alert detection rules in a separate external file.</td></tr><tr><td>Rules</td><td>(Optional) Defines anomalies and patterns of interest to be detected. This section is ignored if <code>&#x3C;RulesFile></code> is set.</td></tr></tbody></table>
+<table><thead><tr><th width="139.55560302734375">Key</th><th>Description</th></tr></thead><tbody><tr><td>Webhooks</td><td>A list of webhooks to receive the notifications. Notifications are sent to every <code>&#x3C;Webhook></code>.</td></tr><tr><td>RulesFile</td><td>(Optional) Manages alert detection rules in a separate external file.</td></tr><tr><td>Rules</td><td>(Optional) Defines anomalies and patterns of interest to be detected. This section is ignored if <code>&#x3C;RulesFile></code> is set.</td></tr></tbody></table>
+
+### Webhook
+
+<table><thead><tr><th width="139.55560302734375">Key</th><th>Description</th></tr></thead><tbody><tr><td>Url</td><td><p>The HTTP Server is to receive the notification.</p><ul><li>HTTP and HTTPS are available.</li></ul></td></tr><tr><td>SecretKey</td><td>(Optional) The secret key used to sign the notification with HMAC. For more information, see <a href="enhanced-alert.md#security">Security</a>.</td></tr><tr><td>HashAlgorithm</td><td>(Optional, Default: <code>SHA-1</code>) The hash algorithm used for the HMAC signature. <code>SHA-224</code>, <code>SHA-256</code>, <code>SHA-384</code>, <code>SHA-512</code>, <code>SHA-512/224</code> and <code>SHA-512/256</code> are also available. For more information, see <a href="../access-control-and-security/sha-2-support.md">SHA-2 Support</a>.</td></tr><tr><td>Timeout</td><td>(Optional, Default: 3000) Time to wait for a response after the request (in milliseconds). Must be greater than 0.</td></tr></tbody></table>
+
+:::warning
+
+`<Url>`, `<SecretKey>`, `<Timeout>` and `<HashAlgorithm>` set directly under `<Alert>` are deprecated and will be removed in a future release. During the deprecation period they still work as a single webhook. Please use `<Webhooks>` instead.
+
+:::
+
+:::info
+
+Notifications are sent to each webhook sequentially, and a request that fails without an HTTP response (e.g. connection timeout, network error or an internal error while sending) is retried up to 2 times. An HTTP error response (a status code other than 200) is not retried. A webhook that responds slowly or is unreachable therefore delays delivery to the webhooks after it. To keep alert delivery healthy:
+
+* Prefer an IP address for `<Url>`, or a hostname whose DNS server is reliable — the hostname is resolved on every request and DNS resolution is not covered by `<Timeout>`.
+* `<Webhook><Timeout>` must be greater than `0`. The deprecated `<Alert><Timeout>` still accepts `0`, which means waiting for a response indefinitely; avoid it.
+* `<Url>` must have the form `http(s)://host[:port][/path][?query]`: `host` is a hostname, an IPv4 address or a bracketed IPv6 address, `port` (if written) is 1-65535, and `path`/`query` consist of printable ASCII characters without `#` or a second `?` (percent-encode anything else). Credentials (`user:password@`) are not supported because they would not be sent with the request; use `<SecretKey>` to authenticate the notification instead. Any other URL is rejected at startup.
+
+:::
 
 ### Rules File
 
@@ -1388,7 +1417,7 @@ The following provides additional information when an Egress Stream creation fai
 
 The control server may need to validate incoming HTTP requests for security reasons. To do this, the Enhanced Alert module puts the `X-OME-Signature` value in the HTTP request header.
 
-This  `X-OME-Signature` is a base64 URL-safe encoded value obtained by encrypting the payload of an HTTP request with the HMAC-SHA1 algorithm using the secret key set in `<Alert><SecretKey>` of the configuration.
+This `X-OME-Signature` is the base64 URL-safe encoding of the HMAC computed over the payload of the HTTP request, using the secret key set in `<Webhook><SecretKey>` and the hash algorithm set in `<Webhook><HashAlgorithm>` (HMAC-SHA1 by default) of the configuration. HMAC authenticates the payload; it does not encrypt it. Each webhook is therefore signed with its own secret key and hash algorithm.
 
 ### Response
 
