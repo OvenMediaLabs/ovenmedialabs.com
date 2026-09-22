@@ -92,13 +92,30 @@ Collector names are lowercase. An unknown name returns `400` with the list of va
 
 `session` is **not** part of the default scrape: per-session series are high-cardinality and churn quickly. Request it explicitly with `?collect[]=session`, or scrape the `.../streams/{stream}/sessions` path.
 
-Per-session series are populated for **WebRTC, LLHLS, and HLS** playback sessions, and for **SRT** subscriber sessions. Other publishers (OVT, Thumbnail, File, and so on) are reflected at the stream level (via `traffic`/`connection`) but do not create per-session entries.
+Per-session series are populated for **WebRTC, LLHLS, and HLS** playback sessions, for **SRT** subscriber sessions, and for **OVT** relay sessions (the origin side of an origin-edge connection).
+Other publishers (Thumbnail, File, and so on) are reflected at the stream level (via `traffic`/`connection`) but do not create per-session entries.
 
-An SRT subscriber session populates only the SRT egress packet-loss counters. Its bytes and throughput are accounted at the stream level rather than per session, so `ome_session_transmit_bytes_total` and `ome_session_transmit_bps` read `0` for SRT sessions (use the stream-level `ome_transmit_bytes_total{publisher="srt"}` for SRT egress bytes). SRT has no per-session RTT, so `ome_session_rtt_seconds` is not emitted for SRT sessions at all (no method applies), the same way RTT methods are omitted rather than zeroed for any protocol that does not support them.
+An OVT relay session reports RTT only when the OVT bind port is TCP, which is the default.
+If it is bound as SRT, `ome_session_rtt_seconds` is not emitted for that session (no method applies).
 
 ## Metrics reference
 
-Every metric emitted, grouped by collector. Each carries the entity labels of its scope (`vhost`/`app`/`stream`, plus `output_stream`, `publisher`, `session`/`session_id`, `track`/`media`/`codec`, `method`, `protocol` where applicable). All values are raw (no timestamps).
+Every metric emitted, grouped by collector. Each carries the entity labels of its scope (`vhost`/`app`/`stream`, plus `output_stream`, `provider`, `publisher`, `session`/`session_id`, `track`/`media`/`codec`, `method`, `protocol` where applicable). All values are raw (no timestamps).
+
+### The `provider` and `publisher` labels
+
+Direction is always explicit in the label name, never in the value.
+
+- `provider` names the **ingest** side: the provider that brought the source input in (`srt`, `rtmp`, `mpegts`, `ovt`, `webrtc`, `rtsppull`, `multicast`, `scheduled`, `multiplex`). Every stream series carries it. An output rendition reports its input's provider, matching the `stream`/`stream_id` pair, which also names the source input.
+- `publisher` names the **delivery** side: the publisher the bytes went out through (`webrtc`, `llhls`, `hlsv3`, `srt`, `ovt`, `thumbnail`, `push`, `file`). The stream-level egress families and every session series carry it.
+
+A row that has both reads in one direction, so `ome_transmit_bytes_total{provider="rtmp", publisher="srt"}` is an RTMP input delivered over SRT.
+To find everything about SRT, ask the direction you mean: `{provider="srt"}` for ingest and `{publisher="srt"}` for delivery.
+
+Metrics that exist for one protocol only keep that protocol in the name (`ome_stream_srt_lost_packets_total`), because a family has to mean the same thing for every series in it.
+They still carry `provider` (or `publisher`), so the selectors above find them.
+
+The `push` families carry their own `protocol` label for the protocol of that push target (`rtmp`, `mpegts`, `srt`), which is a property of the target rather than of the stream.
 
 ### `core` (always on)
 
@@ -163,7 +180,7 @@ Every metric emitted, grouped by collector. Each carries the entity labels of it
 | --------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
 | `ome_session_transmit_bytes_total`            | counter | Media bytes transmitted to this subscriber session.                                                                   |
 | `ome_session_transmit_bps`                    | gauge   | Current transmit throughput to the session, in bits per second.                                                       |
-| `ome_session_rtt_seconds`                     | gauge   | Per-session round-trip time, split by `protocol` and `method`. See [Round-trip time](#round-trip-time).               |
+| `ome_session_rtt_seconds`                     | gauge   | Per-session round-trip time, split by `publisher` and `method`. See [Round-trip time](#round-trip-time).              |
 | `ome_session_srt_lost_packets_total`          | counter | SRT egress: packets the subscriber reported lost via NAK. SRT sessions only. See [SRT packet loss](#srt-packet-loss). |
 | `ome_session_srt_retransmitted_packets_total` | counter | SRT egress: packets retransmitted to the subscriber. SRT sessions only.                                               |
 | `ome_session_srt_dropped_packets_total`       | counter | SRT egress: packets dropped too-late-to-send (TLPKTDROP). SRT sessions only.                                          |
@@ -172,15 +189,17 @@ Every metric emitted, grouped by collector. Each carries the entity labels of it
 
 Two RTT gauges are exposed in seconds, each carrying a `method` label that says how the value was measured:
 
-- `ome_session_rtt_seconds` (in `session`): RTT to a playback subscriber. Per-session metrics are produced for **WebRTC, LLHLS, and HLS** sessions, and every session series also carries a `protocol` label (`webrtc`, `llhls`, `hlsv3`, ...) so RTT can be split by delivery protocol as well as by method. The methods available depend on the protocol:
+- `ome_session_rtt_seconds` (in `session`): RTT to a playback subscriber. Per-session metrics are produced for **WebRTC, LLHLS, HLS, SRT, and OVT** sessions, and every session series also carries a `publisher` label (`webrtc`, `llhls`, `hlsv3`, `srt`, `ovt`, ...) so RTT can be split by delivery protocol as well as by method. The methods available depend on the protocol:
   - `method="rtcp"`: derived from RTCP Receiver Reports (the media path). WebRTC only.
   - `method="stun"`: derived from ICE STUN binding request/response timing. WebRTC only.
-  - `method="tcp"`: the kernel's smoothed TCP round-trip time (`TCP_INFO.tcpi_rtt`, SRTT) of the session's socket. Produced for HLS/LLHLS sessions (the HTTP connection that most recently served the session) and for WebRTC sessions carried over ICE-over-TCP; WebRTC sessions on UDP (the common case) emit no `tcp` series.
+  - `method="tcp"`: the kernel's smoothed TCP round-trip time (`TCP_INFO.tcpi_rtt`, SRTT) of the session's socket. Produced for HLS/LLHLS sessions (the HTTP connection that most recently served the session), for OVT relay sessions, and for WebRTC sessions carried over ICE-over-TCP; WebRTC sessions on UDP (the common case) emit no `tcp` series.
   - `method="tcp_min"`: the kernel's minimum observed RTT (`TCP_INFO.tcpi_min_rtt`) of the same socket - the best-case path floor, filtering out the queuing/retransmit/delayed-ACK inflation carried by `tcp` (SRTT). Same TCP applicability as `tcp`.
+  - `method="srt"`: libsrt's own RTT estimate (`msRTT` from `srt_bstats`) for the subscriber connection. SRT sessions only, which are UDP and therefore have no `TCP_INFO` RTT to report instead.
 - `ome_stream_rtt_seconds` (in `stream`): ingest RTT of an input stream, by method:
   - `method="stun"`: from STUN binding request/response timing (WebRTC/WHIP input).
-  - `method="tcp"`: the ingest socket's smoothed TCP round-trip time (`TCP_INFO.tcpi_rtt`, SRTT). Produced **only for TCP-based inputs** such as RTMP and RTSP-over-TCP; UDP-based inputs emit no `tcp` series.
+  - `method="tcp"`: the ingest socket's smoothed TCP round-trip time (`TCP_INFO.tcpi_rtt`, SRTT). Produced **only for TCP-based inputs** such as RTMP, RTSP-over-TCP, and an OVT pull from an origin; UDP-based inputs emit no `tcp` series.
   - `method="tcp_min"`: the ingest socket's minimum observed RTT (`TCP_INFO.tcpi_min_rtt`), the best-case path floor. Same TCP applicability as `tcp`.
+  - `method="srt"`: libsrt's own RTT estimate (`msRTT` from `srt_bstats`) for the ingest connection. SRT inputs only.
 
 Because these methods measure the same round-trip at different layers, they will not agree exactly: `rtcp` reflects the media path, `stun` the ICE application exchange, and `tcp` the kernel transport (with `tcp_min` its best-case floor).
 Comparing them is useful - for example, a `stun`/`rtcp` value that spikes while `tcp` stays flat points to jitter or queuing above the transport rather than a network problem; a large `tcp` vs `tcp_min` gap points to queuing/retransmit within the TCP connection itself.
@@ -191,7 +210,7 @@ Only the methods that apply to a session's/stream's protocol are exported - ther
 
 The `rtcp` and `stun` series are refreshed only when the peer drives new traffic: `rtcp` on each incoming RTCP Receiver Report, and `stun` on each STUN binding response (the peer's ICE connectivity/consent-freshness checks, typically every few seconds).
 If the peer goes silent, these gauges hold their last value until the session or stream is torn down and the series disappears - they are not reset to `0`, so treat a non-zero value as "last measured RTT", not necessarily "current".
-The `tcp` and `tcp_min` series are instead sampled at scrape time by reading the socket directly, so they always reflect the current transport state.
+The `tcp`, `tcp_min`, and `srt` series are instead sampled at scrape time by reading the socket directly, so they always reflect the current transport state.
 Each `stun` value (session, and the `stun` series of `ome_stream_rtt_seconds`) reflects the candidate pair that produced the most recent binding response, which is normally the nominated pair but may differ while the peer is still probing multiple pairs.
 
 ### SRT packet loss
@@ -229,8 +248,12 @@ rate(ome_receive_bytes_total{stream="my_stream", output_stream=""}[1m]) * 8
 # Egress bitrate by publisher, bits per second
 sum by (publisher) (rate(ome_transmit_bytes_total{stream="my_stream", output_stream=""}[1m])) * 8
 
-# Per-session RTT (all protocols/methods) for an application
+# Per-session RTT (all publishers/methods) for an application
 ome_session_rtt_seconds{app="my_app"}
+
+# Everything about SRT, asked one direction at a time
+{provider="srt"}
+{publisher="srt"}
 
 # Transport-vs-media RTT divergence for WebRTC sessions
 # (large positive = TCP transport is slower than the media-path RTT)

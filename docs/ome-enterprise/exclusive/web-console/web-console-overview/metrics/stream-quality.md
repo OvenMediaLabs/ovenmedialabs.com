@@ -56,7 +56,9 @@ A **blank cell means the protocol has no such metric**; a `0` is a measured zero
 
 :::info
 
-Applications using `<OriginMode>` serve LLHLS/HLS viewers from a shared session pool, so those viewers do not appear as individual rows here. WebRTC and SRT sessions always do.
+Applications using `<OriginMode>` serve LLHLS/HLS viewers from a shared session pool, so those viewers do not appear as individual rows here.
+WebRTC, SRT, and OVT sessions always do.
+An OVT row is an edge server pulling the stream rather than a viewer, so its bitrate is normally the largest in the list.
 
 :::
 
