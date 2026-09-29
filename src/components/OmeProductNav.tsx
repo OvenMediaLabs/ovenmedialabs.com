@@ -4,11 +4,17 @@ const NAVBAR_H = 78;
 const NAVBAR_H_MOBILE = 64;
 
 const PRODUCTS = [
-  { href: '/om-cloud',   label: 'OvenMedia Cloud',  color: 'rgb(197, 163, 142)', bg: 'rgba(197, 163, 142, 0.15)', border: 'rgba(197, 163, 142, 0.35)' },
-  { href: '#enterprise',  label: 'OME Enterprise',   color: 'rgb(56, 189, 248)',  bg: 'rgba(56, 189, 248, 0.15)',  border: 'rgba(56, 189, 248, 0.35)'  },
+  { href: '#enterprise',  label: 'OvenMediaEngine Enterprise', color: 'rgb(56, 189, 248)',  bg: 'rgba(56, 189, 248, 0.15)',  border: 'rgba(56, 189, 248, 0.35)'  },
   { href: '#open-source', label: 'OvenMediaEngine',  color: 'rgb(74, 222, 128)',  bg: 'rgba(74, 222, 128, 0.15)',  border: 'rgba(74, 222, 128, 0.35)'  },
-  { href: '/ome-consultation', label: 'sales', color: '#C5A38E', bg: 'rgba(197, 163, 142, 0.15)', border: 'rgba(197, 163, 142, 0.3)', desktopOnly: true },
+  { href: '/ome-consultation', label: 'sales', color: '#C5A38E', bg: 'rgba(197, 163, 142, 0.15)', border: 'rgba(197, 163, 142, 0.3)' },
 ];
+
+const ContactIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display: 'block', flexShrink: 0}}>
+    <path d="M22 2L11 13" />
+    <path d="M22 2L15 22L11 13L2 9Z" />
+  </svg>
+);
 
 export default function OmeProductNav(): React.ReactElement {
   const [visible, setVisible] = useState(false);
@@ -65,17 +71,17 @@ export default function OmeProductNav(): React.ReactElement {
           transition: 'opacity 0.3s ease, transform 0.3s ease',
         }}
       >
-        {PRODUCTS.filter(p => !p.desktopOnly).map(({ href, label, color, bg }) => (
+        {PRODUCTS.map(({ href, label, color, bg }) => (
           <a
             key={href}
             href={href}
             className="ome-nav-btn"
             style={{
-              flex: 1,
+              flex: label === 'sales' ? '0 0 auto' : 1,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '8px 4px',
+              padding: label === 'sales' ? '8px 14px' : '8px 4px',
               background: bg.replace(', 0.15)', ', 0.25)'),
               color,
               fontSize: '11px',
@@ -84,9 +90,10 @@ export default function OmeProductNav(): React.ReactElement {
               whiteSpace: 'nowrap',
               letterSpacing: '-0.01em',
               textAlign: 'center',
+              borderLeft: label === 'sales' ? '1px solid rgba(233,237,246,0.1)' : undefined,
             }}
           >
-            {href === '#open-source' ? 'OvenMediaEngine' : label}
+            {label === 'sales' ? <ContactIcon /> : label}
           </a>
         ))}
       </div>
@@ -119,23 +126,23 @@ export default function OmeProductNav(): React.ReactElement {
         transition: 'opacity 0.35s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
       }}
     >
-      {PRODUCTS.map(({ href, label, color, bg, border, desktopOnly }, i) => (
+      {PRODUCTS.map(({ href, label, color, bg, border }, i) => (
         <React.Fragment key={href}>
-          {desktopOnly && (
-            <div className="d-none d-md-block" style={{width: '1px', background: 'rgba(233,237,246,0.12)', margin: '4px 8px'}} />
+          {label === 'sales' && (
+            <div style={{width: '1px', background: 'rgba(233,237,246,0.12)', margin: '4px 8px'}} />
           )}
           <a
             href={href}
-            className={`ome-nav-btn${desktopOnly ? ' d-none d-md-flex' : ''}`}
+            className="ome-nav-btn"
             style={{
-              flex: desktopOnly ? '0 0 auto' : 1,
+              flex: label === 'sales' ? '0 0 auto' : 1,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: desktopOnly ? '7px 14px' : '7px 8px',
+              padding: label === 'sales' ? '7px 14px' : '7px 8px',
               borderRadius: '999px',
               background: bg,
-              border: desktopOnly ? `1.5px solid ${border}` : `1px solid ${border}`,
+              border: label === 'sales' ? `1.5px solid ${border}` : `1px solid ${border}`,
               color,
               fontSize: '13px',
               fontWeight: 700,
@@ -151,10 +158,7 @@ export default function OmeProductNav(): React.ReactElement {
                 <span className="d-md-none">OME</span>
               </>
             ) : label === 'sales' ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{display: 'block', flexShrink: 0}}>
-                <path d="M22 2L11 13" />
-                <path d="M22 2L15 22L11 13L2 9Z" />
-              </svg>
+              <ContactIcon />
             ) : label}
           </a>
         </React.Fragment>
