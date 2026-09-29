@@ -71,8 +71,8 @@ import OrbitDot from '@site/src/components/OrbitDot';
       </div>
       <div className="col-lg-10">
         <h1 className="display-2s fw-bold text-main mb-4 lh-tight reveal-up">
-          <span className="text-main">OvenMediaEngine<span style={{fontSize: '0.65em'}}>,</span></span>
-          <span className="d-block" style={{background: 'linear-gradient(100deg, #7dd3fc 0%, var(--brand-secondary) 33%, #a855f7 66%, var(--aws-light) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', paddingBottom: '0.1em'}}>Live Streaming Server</span>
+          <span className="text-main">OvenMediaEngine<span style={{fontSize: '0.65em'}}>:</span></span>
+          <span style={{background: 'linear-gradient(100deg, #7dd3fc 0%, var(--brand-secondary) 33%, #a855f7 66%, var(--aws-light) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', paddingBottom: '0.1em'}}> <span style={{whiteSpace: 'nowrap'}}>Self-Hosted</span> <span style={{whiteSpace: 'nowrap'}}>Sub-Second</span> <span style={{whiteSpace: 'nowrap'}}>Live Streaming Server</span></span>
         </h1>
         <p className="lead text-main mb-3 reveal-up col-lg-10 mx-auto" style={{fontWeight: 400}}>Deliver high-definition live stream to hundreds of thousands of viewers in under a second, all from a server you deploy on your own infrastructure.</p>
       </div>
@@ -83,20 +83,8 @@ import OrbitDot from '@site/src/components/OrbitDot';
         <span className="fms-herosub text-secondary reveal-up d-block">Pick the OvenMediaEngine that fits your team <i className="ph ph-arrow-down arrow-bounce ms-1" style={{fontSize: '1rem'}}></i></span>
       </div>
     </div>
-    <div id="hero-product-cards" className="row g-2 mt-2 justify-content-center reveal-up">
-      <div className="col-12 col-lg-hero-card">
-        <a href="/om-cloud" className="hero-card-fms d-flex flex-column p-2 rounded-4 h-100 text-start text-decoration-none" style={{border: '1px solid color-mix(in srgb, var(--fms-light), transparent 50%)', boxShadow: '0 0 24px color-mix(in srgb, var(--fms-light), transparent 80%)', background: 'color-mix(in srgb, var(--fms-light), transparent 80%)'}}>
-          <div className="d-flex justify-content-between align-items-start mb-2 px-0 px-lg-1">
-            <span className="badge fw-bold text-dark" style={{background: 'var(--fms-light)'}}>Fully Managed Live Streaming by OME Engineers</span>
-            <i className="ph ph-arrow-up-right" style={{color: 'var(--fms-main)', fontSize: '1rem', opacity: 0.7}}></i>
-          </div>
-          <h3 className="h5 fw-bold text-main mb-2 px-1 px-lg-2" style={{fontSize: 'clamp(1rem, 2.5vw, 1.125rem)'}}>OvenMedia Cloud</h3>
-          <div className="mt-auto">
-            <p className="extra-small mb-1 pt-2 text-center fst-italic" style={{color: 'var(--fms-main)', borderTop: '1px solid color-mix(in srgb, var(--fms-light), transparent 80%)'}}>Tell us what you need, and the OME Team will handle the rest</p>
-          </div>
-        </a>
-      </div>
-      <div className="col-12 col-lg-hero-card">
+    <div id="hero-product-cards" className="row g-3 mt-2 justify-content-center reveal-up">
+      <div className="col-12 col-md-6 col-lg-5">
         <a href="#enterprise" className="hero-card-enterprise d-flex flex-column p-2 rounded-4 h-100 text-start text-decoration-none" style={{border: '1px solid color-mix(in srgb, var(--ent-light), transparent 50%)', boxShadow: '0 0 24px color-mix(in srgb, var(--ent-light), transparent 80%)', background: 'color-mix(in srgb, var(--ent-light), transparent 80%)'}}>
           <div className="d-flex justify-content-between align-items-start mb-2 px-0 px-lg-1">
             <span className="badge fw-bold text-dark" style={{background: 'var(--ent-light)'}}>Enterprise Live Streaming Server Package</span>
@@ -108,7 +96,7 @@ import OrbitDot from '@site/src/components/OrbitDot';
           </div>
         </a>
       </div>
-      <div className="col-12 col-lg-hero-card">
+      <div className="col-12 col-md-6 col-lg-5">
         <a href="#open-source" className="hero-card-oss d-flex flex-column p-2 rounded-4 h-100 text-start text-decoration-none" style={{border: '1px solid color-mix(in srgb, var(--oss-light), transparent 50%)', boxShadow: '0 0 24px color-mix(in srgb, var(--oss-light), transparent 80%)', background: 'color-mix(in srgb, var(--oss-light), transparent 80%)'}}>
           <div className="d-flex justify-content-between align-items-start mb-2 px-0 px-lg-1">
             <span className="badge fw-bold text-dark" style={{background: 'var(--oss-light)'}}>Open-source Live Streaming Server</span>
@@ -274,7 +262,7 @@ import OrbitDot from '@site/src/components/OrbitDot';
     <div className="container">
       <div className="text-center mb-5 reveal-up">
         <span className="badge bg-brand text-dark mb-3">Enterprise Fit</span>
-        <h2 id="enterprise-features" className="display-4 fw-bold text-main mb-3 copy-title">Production-grade Live Streaming,<br />Fully Supported</h2>
+        <h2 id="enterprise-features" className="display-4 fw-bold text-main mb-3 copy-title"><span style={{whiteSpace: 'nowrap'}}>Production-grade</span> <span style={{whiteSpace: 'nowrap'}}>Live Streaming,</span><br /><span style={{whiteSpace: 'nowrap'}}>Fully Supported</span></h2>
         <p className="lead text-sub col-lg-8 mx-auto">The moment your live streaming service needs reliability, support, and operational control, it is time to move to OvenMediaEngine Enterprise.</p>
       </div>
 
@@ -386,7 +374,7 @@ import OrbitDot from '@site/src/components/OrbitDot';
     <div className="container">
       <div className="text-center mb-4 reveal-up">
         <span className="badge bg-brand text-dark mb-3">Direct Licensing</span>
-        <h2 id="pricing" className="display-4 fw-bold text-main mb-3 copy-title">Self-hosted, Per-instance Pricing<span className="d-block display-6 fst-italic" style={{marginTop: 0, color: 'var(--company-primary)'}}>No Per-viewer Fees, No Channel Limits</span></h2>
+        <h2 id="pricing" className="display-4 fw-bold text-main mb-3 copy-title"><span style={{whiteSpace: 'nowrap'}}>Self-hosted,</span> <span style={{whiteSpace: 'nowrap'}}>Per-instance Pricing</span><span className="d-block display-6 fst-italic" style={{marginTop: 0, color: 'var(--company-primary)'}}><span style={{whiteSpace: 'nowrap'}}>No Per-viewer Fees,</span> <span style={{whiteSpace: 'nowrap'}}>No Channel Limits</span></span></h2>
         <p className="lead text-sub col-lg-8 mx-auto">Every plan includes the complete OvenMediaEngine Enterprise feature set, Guaranteed LTS, Basic-tier support, and unrestricted channel usage.</p>
         <p className="small mt-2 mb-0" style={{color: 'var(--brand-accent)'}}>* Discounts available for bulk purchases or long-term contracts.</p>
       </div>
@@ -511,7 +499,7 @@ import OrbitDot from '@site/src/components/OrbitDot';
       <div className="row align-items-center g-4 g-lg-5">
         <div className="col-lg-6 reveal-up">
           <span className="badge text-dark mb-2" style={{background: '#f59e0b'}}>Cloud Marketplace</span>
-          <div className="fw-bold text-main mb-2 lh-tight display-5">Prefer AWS?<br />Deploy in Minutes</div>
+          <div className="fw-bold text-main mb-2 lh-tight display-5"><span style={{whiteSpace: 'nowrap'}}>Prefer AWS?</span> <span style={{whiteSpace: 'nowrap'}}>Deploy in Minutes</span></div>
           <p className="text-sub mb-0">Self-host with the Enterprise package, or launch directly from AWS Marketplace without separate license procurement.</p>
         </div>
         <div className="col-lg-6 reveal-up">
@@ -547,7 +535,7 @@ import OrbitDot from '@site/src/components/OrbitDot';
       <div className="row align-items-center mb-4">
         <div className="col-lg-8 text-center text-lg-start mb-4 mb-lg-0">
           <span className="badge bg-brand text-dark w-auto align-self-center align-self-lg-start mb-2">OME Enterprise Support Program</span>
-          <h2 id="enterprise-support" className="display-4 fw-bold text-main mb-3 copy-title">Direct-to-Engineer Support</h2>
+          <h2 id="enterprise-support" className="display-4 fw-bold text-main mb-3 copy-title"><span style={{whiteSpace: 'nowrap'}}>Direct-to-Engineer</span> Support</h2>
           <p className="lead text-sub"><span className="text-secondary fw-bold">Basic Tier</span> <span className="small">(Email / Max 3 Business Days)</span> is the default support level for all OME-E customers.<br className="d-none d-sm-block" /> Upgrade for dedicated support, mission-critical SLAs, and more.</p>
 
           <div className="mt-n5 reveal-up">
@@ -656,11 +644,11 @@ import OrbitDot from '@site/src/components/OrbitDot';
 
 </div>
 
-<section className="full-page-section d-flex flex-column position-relative bg-middle-50">
+<section id="cloud-part" className="full-page-section d-flex flex-column position-relative" style={{background: 'color-mix(in srgb, var(--company-primary), transparent 80%)'}}>
   <div className="w-100 flex-grow-1 d-flex align-items-center py-5">
     <div className="container text-center reveal-up">
-      <h2 className="h2s fw-bold text-main mb-3">Looking for the OvenMediaEngine Team to Build and Manage It All for You?</h2>
-      <p className="lead text-sub fw-light mb-4 col-lg-8 mx-auto">Discover OvenMedia Cloud, a fully managed live streaming service built and operated by the OvenMediaEngine team around your workflow.</p>
+      <h2 className="h2s fw-bold text-main mb-3">Looking for the <span style={{whiteSpace: 'nowrap'}}>OvenMediaEngine Team</span> to Build and Manage It All for You?</h2>
+      <p className="lead fw-light mb-4 col-lg-8 mx-auto" style={{color: 'color-mix(in srgb, var(--text-main), transparent 50%)'}}>Discover OvenMedia Cloud, a fully managed live streaming service built and operated by the OvenMediaEngine team around your workflow.</p>
       <div className="d-grid d-md-block">
         <a href="/om-cloud" className="btn btn-company-outline rounded-pill px-5">Explore OvenMedia Cloud</a>
       </div>
@@ -816,7 +804,7 @@ import OrbitDot from '@site/src/components/OrbitDot';
     <div className="container">
       <div className="text-center mb-5 reveal-up">
         <span className="badge text-dark mb-3 fw-bold" style={{background: 'var(--oss-main)'}}>Open-Source Projects</span>
-        <h2 className="display-4 fw-bold text-main mb-3 copy-title">Build with the OvenMediaEngine Ecosystem</h2>
+        <h2 className="display-4 fw-bold text-main mb-3 copy-title">Build with the <span style={{whiteSpace: 'nowrap'}}>OvenMediaEngine Ecosystem</span></h2>
         <p className="lead text-sub col-lg-8 mx-auto">Complete your real-time streaming workflow with open-source tools for playback and publishing, optimized for OvenMediaEngine.</p>
       </div>
 
