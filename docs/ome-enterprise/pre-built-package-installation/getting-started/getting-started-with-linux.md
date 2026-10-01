@@ -15,6 +15,7 @@ To get started with OvenMediaEngine Enterprise on Linux, check the [Prerequisite
 
 To install OvenMediaEngine Enterprise, you need one of the following Linux versions:
 
+* Ubuntu 26.04 LTS
 * Ubuntu 24.04 LTS
 * Ubuntu 22.04 LTS
 * RHEL 9

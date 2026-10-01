@@ -11,9 +11,9 @@ When you install OvenMediaEngine Enterprise with the distributed RPM/DEB package
 
 | Device | Support OS | Driver Version | Decoder | Encoder |
 | --- | --- | --- | --- | --- |
-| NVIDIA | Ubuntu 22.04 / 24.04, Rocky 9 | Driver 535+ | H.264, H.265, AV1 (Ampere+) | H.264, H.265, AV1 (Ada Lovelace+) |
+| NVIDIA | Ubuntu 22.04 / 24.04 / 26.04, Rocky 9 | Driver 535+ | H.264, H.265, AV1 (Ampere+) | H.264, H.265, AV1 (Ada Lovelace+) |
 | Xilinx Alveo U30MA | Ubuntu 22.04 / 24.04 | Video SDK 3.0 | H.264, H.265 | H.264, H.265 |
-| NETINT Quadra VPU | Ubuntu 22.04 / 24.04, Rocky 9 | libxcoder V5.7.0+ (Quadra Release SW) | H.264, H.265 | H.264, H.265, AV1 |
+| NETINT Quadra VPU | Ubuntu 22.04 / 24.04 / 26.04, Rocky 9 | libxcoder V5.7.0+ (Quadra Release SW) | H.264, H.265 | H.264, H.265, AV1 |
 
 :::note
 On NVIDIA, AV1 support depends on the GPU generation: **decoding requires Ampere or newer** (except A100/A30) and **encoding requires Ada Lovelace or newer**. So an Ampere GPU can decode AV1 but cannot encode it.
@@ -29,7 +29,7 @@ When a device cannot handle AV1, it falls back to the software codec.
 
 The contents of this section are based on the `misc/install_nvidia_driver.sh` script provided by OvenMediaEngine as Open-Source. The minimum required version is **NVIDIA Driver 535**. The CUDA Toolkit does not need to be installed separately, as OvenMediaEngine includes the CUDA runtime it requires. If installation issues arise, please refer to the [Official NVIDIA Documentation](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/#package-manager-installation).
 
-#### Ubuntu Linux 22.04 / 24.04
+#### Ubuntu Linux 22.04 / 24.04 / 26.04
 
 ```bash
 # Install prerequisites
@@ -57,19 +57,26 @@ EOF
 fi
 
 # Register the official NVIDIA CUDA repository
-# Replace 'ubuntu2204' with 'ubuntu2404' on Ubuntu 24.04
+# Replace 'ubuntu2204' with 'ubuntu2404' or 'ubuntu2604' to match your release.
+# cuda-keyring installs the signing key, the repository entry and the apt pin at
+# once. Ubuntu 26.04 requires it: apt 3.x no longer ships apt-key, and NVIDIA
+# does not publish the legacy 3bf863cc.pub key under repos/ubuntu2604.
 REPO_DIST=ubuntu2204
 REPO_BASE=https://developer.download.nvidia.com/compute/cuda/repos/${REPO_DIST}/x86_64
-curl -fsSLo cuda-${REPO_DIST}.pin ${REPO_BASE}/cuda-${REPO_DIST}.pin
-sudo install -m 644 cuda-${REPO_DIST}.pin /etc/apt/preferences.d/cuda-repository-pin-600
-rm -f cuda-${REPO_DIST}.pin
-sudo apt-key adv --fetch-keys ${REPO_BASE}/3bf863cc.pub
-sudo add-apt-repository -y "deb ${REPO_BASE}/ /"
+curl -fsSLo cuda-keyring.deb ${REPO_BASE}/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring.deb
+rm -f cuda-keyring.deb
 sudo apt-get update
 
 # Install the NVIDIA driver
 sudo apt-get install -y --no-install-recommends nvidia-driver-535
 ```
+
+:::note
+
+On Ubuntu 26.04 `nvidia-driver-535` is a transitional package that installs the 580 series. That is fine: the requirement is driver 535 or newer, and the CUDA runtime OvenMediaEngine needs is bundled in the package.
+
+:::
 
 #### Rocky Linux 9
 
