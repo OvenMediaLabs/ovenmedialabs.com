@@ -99,6 +99,10 @@ How much metrics history the Web Console can chart is set by `OME_PROMETHEUS_RET
 
 To use an NVIDIA GPU inside the container, you must first install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) on the host (this requires the NVIDIA driver to already be installed on the host). Then, use the GPU-enabled image (`ovenmedialabs/ovenmediaengine-enterprise:latest-gpu`) and run OvenMediaEngine Enterprise with the `--gpus all` option as shown below. For more detailed configuration instructions, please refer to the [official documentation](https://docs.docker.com/engine/containers/gpu/).
 
+:::note[GPU image requirements]
+The GPU image is built with CUDA 13. The host needs an NVIDIA driver from the R580 branch or newer and a Turing (sm_75) or newer GPU; the container runtime refuses to start the image on an older driver. Pascal and Volta GPUs are not supported by CUDA 13. For those GPUs, or for hosts that must stay on an older driver, install the deb or rpm package instead, which is built against CUDA 12 and follows the requirements in [Hardware Acceleration](../../features/transcoding-and-processing/hardware-acceleration.md).
+:::
+
 
 ```sh
 docker run -d --name=ovenmediaengine \
@@ -230,6 +234,10 @@ How much metrics history the Web Console can chart is set by `OME_PROMETHEUS_RET
 ### Enabling GPU access
 
 To use an NVIDIA GPU inside the container, you must first install the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) on the host (this requires the NVIDIA driver to already be installed on the host). Then, use the GPU-enabled image (`ovenmedialabs/ovenmediaengine-enterprise:latest-gpu`) and add a `deploy` section to the `docker-compose.yaml` file as shown below. For more detailed configuration instructions, please refer to the [official documentation](https://docs.docker.com/compose/how-tos/gpu-support/).
+
+:::note[GPU image requirements]
+The GPU image is built with CUDA 13. The host needs an NVIDIA driver from the R580 branch or newer and a Turing (sm_75) or newer GPU; the container runtime refuses to start the image on an older driver. Pascal and Volta GPUs are not supported by CUDA 13. For those GPUs, or for hosts that must stay on an older driver, install the deb or rpm package instead, which is built against CUDA 12 and follows the requirements in [Hardware Acceleration](../../features/transcoding-and-processing/hardware-acceleration.md).
+:::
 
 ```yaml title="docker-compose.yaml"
 services:

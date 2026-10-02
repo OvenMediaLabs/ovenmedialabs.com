@@ -15,6 +15,8 @@ When you install OvenMediaEngine Enterprise with the distributed RPM/DEB package
 | Xilinx Alveo U30MA | Ubuntu 22.04 / 24.04 | Video SDK 3.0 | H.264, H.265 | H.264, H.265 |
 | NETINT Quadra VPU | Ubuntu 22.04 / 24.04 / 26.04, Rocky 9 | libxcoder V5.7.0+ (Quadra Release SW) | H.264, H.265 | H.264, H.265, AV1 |
 
+The table describes the deb and rpm packages, which are built against CUDA 12. The Docker GPU image (`latest-gpu` and the `*-gpu` tags) is built with CUDA 13 and requires an NVIDIA driver from the R580 branch or newer and a Turing (sm_75) or newer GPU; Pascal and Volta GPUs are not supported by that image.
+
 :::note
 On NVIDIA, AV1 support depends on the GPU generation: **decoding requires Ampere or newer** (except A100/A30) and **encoding requires Ada Lovelace or newer**. So an Ampere GPU can decode AV1 but cannot encode it.
 
