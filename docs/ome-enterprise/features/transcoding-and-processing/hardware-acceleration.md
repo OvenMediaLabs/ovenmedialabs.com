@@ -40,8 +40,14 @@ sudo apt-get install -y --no-install-recommends \
     apt-utils ca-certificates curl gnupg2 lshw \
     software-properties-common ubuntu-drivers-common
 
-# Uninstall any previously installed NVIDIA driver and CUDA Toolkit packages
-sudo apt-get remove -y --purge 'nvidia-*' 'cuda-*' 'libnvidia-*' 'nsight-*'
+# Uninstall any previously installed NVIDIA driver and CUDA Toolkit packages, including
+# pre-built kernel modules. The packages are enumerated so that cuda-keyring, which
+# carries the NVIDIA repository itself, stays installed.
+PACKAGES=$(dpkg-query -W -f='${db:Status-Abbrev} ${binary:Package}\n' \
+    'nvidia-*' 'cuda-*' 'libnvidia-*' 'nsight-*' \
+    'linux-modules-nvidia-*' 'linux-objects-nvidia-*' 'linux-signatures-nvidia-*' 2>/dev/null \
+    | awk '$1 != "un" && $2 != "cuda-keyring" {print $2}')
+sudo apt-get remove -y --purge ${PACKAGES}
 sudo apt-get autoremove -y
 
 # Disable the nouveau driver if it is loaded (a reboot is required afterwards)
@@ -70,13 +76,25 @@ sudo dpkg -i cuda-keyring.deb
 rm -f cuda-keyring.deb
 sudo apt-get update
 
-# Install the NVIDIA driver
+# Install the NVIDIA driver (Ubuntu 22.04 / 24.04)
 sudo apt-get install -y --no-install-recommends nvidia-driver-535
+```
+
+On Ubuntu 26.04, install the kernel modules Ubuntu pre-builds for your kernel instead of `nvidia-driver-535`. `nvidia-driver-535` is a transitional package for the 580 series there, and the DKMS build it triggers fails on kernel 7.0. Data center GPUs such as the T4, L4 and A10 use the `-server` packages shown below; for GeForce and Quadro boards drop `-server` from every package name.
+
+```bash
+# Install the NVIDIA driver (Ubuntu 26.04): pre-built modules for the running kernel flavour
+# (aws, generic, azure, gcp, ...) plus the user-space packages OvenMediaEngine needs
+FLAVOUR=$(uname -r | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-//')
+sudo apt-get install -y --no-install-recommends \
+    linux-modules-nvidia-580-server-${FLAVOUR} \
+    nvidia-headless-no-dkms-580-server nvidia-utils-580-server \
+    libnvidia-encode-580-server libnvidia-decode-580-server
 ```
 
 :::note
 
-On Ubuntu 26.04 `nvidia-driver-535` is a transitional package that installs the 580 series. That is fine: the requirement is driver 535 or newer, and the CUDA runtime OvenMediaEngine needs is bundled in the package.
+The module package follows the kernel metapackage and may install a newer kernel than the one running. If `nvidia-smi` cannot find the driver right after the installation, reboot once; no further step is needed. The requirement is driver 535 or newer, and the CUDA runtime OvenMediaEngine needs is bundled in the package.
 
 :::
 
