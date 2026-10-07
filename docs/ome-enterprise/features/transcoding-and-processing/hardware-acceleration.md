@@ -42,11 +42,11 @@ sudo apt-get install -y --no-install-recommends \
 
 # Uninstall any previously installed NVIDIA driver and CUDA Toolkit packages, including
 # pre-built kernel modules. The packages are enumerated so that cuda-keyring, which
-# carries the NVIDIA repository itself, stays installed.
+# carries the NVIDIA repository itself, and the NVIDIA Container Toolkit stay installed.
 PACKAGES=$(dpkg-query -W -f='${db:Status-Abbrev} ${binary:Package}\n' \
     'nvidia-*' 'cuda-*' 'libnvidia-*' 'nsight-*' \
     'linux-modules-nvidia-*' 'linux-objects-nvidia-*' 'linux-signatures-nvidia-*' 2>/dev/null \
-    | awk '$1 != "un" && $2 != "cuda-keyring" {print $2}')
+    | awk '$1 != "un" && $2 != "cuda-keyring" && $2 !~ /^(nvidia-container-toolkit|libnvidia-container)/ {print $2}')
 sudo apt-get remove -y --purge ${PACKAGES}
 sudo apt-get autoremove -y
 
@@ -76,25 +76,50 @@ sudo dpkg -i cuda-keyring.deb
 rm -f cuda-keyring.deb
 sudo apt-get update
 
-# Install the NVIDIA driver (Ubuntu 22.04 / 24.04)
+# Install the NVIDIA driver (Ubuntu 22.04 / 24.04 on the GA kernel): DKMS build
+# The headers of the running kernel and the compiler it was built with are required.
+sudo apt-get install -y --no-install-recommends build-essential linux-headers-$(uname -r)
 sudo apt-get install -y --no-install-recommends nvidia-driver-535
 ```
 
-On Ubuntu 26.04, install the kernel modules Ubuntu pre-builds for your kernel instead of `nvidia-driver-535`. `nvidia-driver-535` is a transitional package for the 580 series there, and the DKMS build it triggers fails on kernel 7.0. Data center GPUs such as the T4, L4 and A10 use the `-server` packages shown below; for GeForce and Quadro boards drop `-server` from every package name.
+On Ubuntu 26.04, and on 24.04 with the HWE kernel (6.17 or 7.0), install the kernel modules Ubuntu pre-builds for your kernel instead of `nvidia-driver-535`. `nvidia-driver-535` is a transitional package for the 580 series there, and the DKMS build it triggers fails on those kernels. The pre-built modules are signed, so they also load with Secure Boot enabled. Data center GPUs such as the T4, L4 and A10 use the `-server` packages shown first; GeForce and Quadro boards use the regular packages shown after them.
 
 ```bash
-# Install the NVIDIA driver (Ubuntu 26.04): pre-built modules for the running kernel flavour
-# (aws, generic, azure, gcp, ...) plus the user-space packages OvenMediaEngine needs
+# Install the NVIDIA driver (Ubuntu 24.04 HWE kernel / 26.04): pre-built modules for the
+# running kernel flavour (generic, aws, azure, gcp, ...) plus the user-space packages
+# OvenMediaEngine needs. The headers are required: the module package links the .ko
+# against them when it is installed.
 FLAVOUR=$(uname -r | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-//')
+sudo apt-get install -y --no-install-recommends build-essential linux-headers-$(uname -r) linux-headers-${FLAVOUR}
 sudo apt-get install -y --no-install-recommends \
-    linux-modules-nvidia-580-server-${FLAVOUR} \
+    linux-modules-nvidia-580-server-$(uname -r) linux-modules-nvidia-580-server-${FLAVOUR}
+sudo apt-get install -y --no-install-recommends \
     nvidia-headless-no-dkms-580-server nvidia-utils-580-server \
     libnvidia-encode-580-server libnvidia-decode-580-server
 ```
 
+For a GeForce or Quadro board the module and user-space packages lose the `-server` suffix. The user-space packages then have to be pinned to the Ubuntu archive build: the NVIDIA repository registered above ships `nvidia-utils-580`, `libnvidia-encode-580` and friends under a higher apt priority, and a user space from a different build than the Ubuntu pre-built modules does not work.
+
+```bash
+# GeForce / Quadro: regular packages, user space pinned to the Ubuntu archive version
+FLAVOUR=$(uname -r | sed -E 's/^[0-9]+\.[0-9]+\.[0-9]+-[0-9]+-//')
+sudo apt-get install -y --no-install-recommends build-essential linux-headers-$(uname -r) linux-headers-${FLAVOUR}
+sudo apt-get install -y --no-install-recommends \
+    linux-modules-nvidia-580-$(uname -r) linux-modules-nvidia-580-${FLAVOUR}
+# the user space must be the Ubuntu build of the driver version the module package was built from
+REQUIRED=$(apt-cache show linux-modules-nvidia-580-$(uname -r) \
+    | sed -nE 's/.*nvidia-kernel-common-580 \(>= ([0-9.]+)\).*/\1/p' | head -n 1)
+VERSION=$(apt-cache madison nvidia-utils-580 | grep -v developer.download.nvidia.com \
+    | awk -F'|' '{gsub(/ /, "", $2); print $2}' | grep "^${REQUIRED}-" | sort -V | tail -n 1 || true)
+# empty VERSION (no matching Ubuntu build) installs the apt candidate, as the script does
+sudo apt-get install -y --no-install-recommends \
+    nvidia-headless-no-dkms-580${VERSION:+=${VERSION}} nvidia-utils-580${VERSION:+=${VERSION}} \
+    libnvidia-encode-580${VERSION:+=${VERSION}} libnvidia-decode-580${VERSION:+=${VERSION}}
+```
+
 :::note
 
-The module package follows the kernel metapackage and may install a newer kernel than the one running. If `nvidia-smi` cannot find the driver right after the installation, reboot once; no further step is needed. The requirement is driver 535 or newer, and the CUDA runtime OvenMediaEngine needs is bundled in the package.
+This is a headless installation: it contains no OpenGL or X.Org driver, which OvenMediaEngine does not need. Add `libnvidia-gl-580-server` (or `libnvidia-gl-580`) for a desktop session. The module metapackage follows the kernel metapackage and may install a newer kernel than the one running; if `nvidia-smi` cannot find the driver right after the installation, reboot once. The requirement is driver 535 or newer, and the CUDA runtime OvenMediaEngine needs is bundled in the package.
 
 :::
 
