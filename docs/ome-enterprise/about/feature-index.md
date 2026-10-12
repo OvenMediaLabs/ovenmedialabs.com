@@ -93,6 +93,7 @@ to upgrade to) supports the feature or option you need.
 | [Event Forwarding Exclusions](#event-forwarding-exclusions) <Ent /> | Workflow Integration | 0.20.2.0 | [View](../features/workflow-integration-and-external-system-connectivity/event-forwarding-exclusions.md) |
 | Upload Recordings to Bunny Stream <Ent /> | Workflow Integration | 0.20.5.1 | [View](../features/workflow-integration-and-external-system-connectivity/upload-recordings-to-bunny-stream.md) |
 | Server-Side Ad Insertion (SSAI) <Ent /> | Workflow Integration | 0.21.1.0 | [View](../features/workflow-integration-and-external-system-connectivity/server-side-ad-insertion.md) |
+| Scheduled Channel (Fade) <Ent /> | Workflow Integration | 0.21.2.0 | [View](../features/workflow-integration-and-external-system-connectivity/scheduled-channel-fade.md) |
 | Fault Injection <Ent /> | Tests | 0.20.2.0 | [View](../features/tests/fault-injection.md) |
 | [REST API v2 (Internals & Statistics)](#rest-api-v2) <Ent /> | REST API | 0.18.2.1 | [View](../features/rest-api/v2/README.md) |
 | AdmissionFile <Ent /> | Access Control | 0.21.1.0 | TODO |
@@ -162,6 +163,7 @@ listed here have no version-gated options beyond their minimum version above.
 - **0.18.1.0**: `ErrorToleranceDurationMs` option
 - **0.20.5.1**: `forwardData` option on `<Item>` (forward live-input data)
 - **0.21.1.0**: `MaxFallbackDurationMs` option to automatically remove the channel after extended fallback; `PreserveRemovedScheduleFile` to rename removed schedule files with a timestamp instead of deleting them
+- **0.21.2.0**: Fade In / Fade Out per item (`fadeIn`, `fadeOut`, `fadeInColor`, `fadeOutColor`) to fade the video from or to black or white <Ent />
 
 ### Low-Latency HLS
 
