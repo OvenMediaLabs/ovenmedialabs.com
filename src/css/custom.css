@@ -519,6 +519,10 @@ html.plugin-blog .markdown img.blog-hero {
   margin-top: 0;
 }
 
+html.plugin-blog .img-figure figcaption {
+  font-style: italic;
+}
+
 /* Hide the per-doc "Previous / Next" pagination block at the bottom of
  * every docs page. Docusaurus has no global config flag to disable it;
  * `pagination_prev`/`pagination_next: null` in frontmatter only disables
@@ -1900,7 +1904,9 @@ html.plugin-blog.blog-post-page [class*='container_'] {
 }
 
 html.plugin-blog.blog-post-page [class^='card_'] {
-  background: color-mix(in srgb, var(--bg-middle), transparent 50%) !important;
+  /* Opaque pre-mix of the old 50%-transparent tint over --bg-body, so h2
+   * divider lines running under the floated card don't show through. */
+  background: color-mix(in srgb, var(--bg-middle), var(--bg-body) 50%) !important;
   border-color: color-mix(in srgb, var(--bg-surface), transparent 50%) !important;
 }
 

@@ -9,7 +9,20 @@ import MarkdownTable from '@site/src/components/MarkdownTable';
 // Wrap markdown images that have alt text in <figure>/<figcaption> so
 // ![Caption text](./image.png) renders with a visible caption below.
 // Images with no alt text (![](./image.png)) render as plain <img>.
-function Img({src, alt, ...props}: React.ImgHTMLAttributes<HTMLImageElement>) {
+// Docusaurus's transformImage runs alt text through escape-html before
+// handing it to us, so an apostrophe arrives as `&#39;`. React would
+// render that literally, so undo the five escapes escape-html applies.
+function unescapeHtml(text: string): string {
+  return text
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&');
+}
+
+function Img({src, alt: rawAlt, ...props}: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const alt = rawAlt ? unescapeHtml(rawAlt) : rawAlt;
   if (alt) {
     return (
       <figure className="img-figure">
