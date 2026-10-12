@@ -52,3 +52,13 @@ tutorial:
   label: Tutorial
   permalink: /tutorial
   description: Step-by-step guides and how-tos.
+
+exhibition:
+  label: Exhibition
+  permalink: /exhibition
+  description: Trade shows and exhibitions where we showcase our products.
+
+event:
+  label: Event
+  permalink: /event
+  description: Webinars, meetups, talks, and other events that are not trade shows.
