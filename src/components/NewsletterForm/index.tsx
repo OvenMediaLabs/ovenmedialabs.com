@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 
 const ENDPOINT = 'https://form-api.ovenmedia.com/api/forms/newsletter';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -53,6 +53,76 @@ export default function NewsletterForm(): React.ReactElement {
 
   const isOk = status === 'ok';
   const submitting = status === 'submitting';
+  const fieldRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const field = fieldRef.current;
+    if (!field) return;
+    const input = field.querySelector<HTMLInputElement>('.nl-input');
+    const lab = field.querySelector<HTMLElement>('.nl-lab');
+    const line = field.querySelector<HTMLElement>('.nl-line');
+    const ph = field.querySelector<HTMLElement>('.nl-ph');
+    if (!input || !lab || !line || !ph) return;
+
+    function setGap(up: boolean) {
+      line!.style.setProperty('--gap', up ? (lab!.offsetWidth * 0.78 + 6) + 'px' : '0px');
+    }
+
+    function lift() {
+      const up = document.activeElement === input || input!.value.length > 0;
+      field!.classList.toggle('is-up', up);
+      setGap(up);
+    }
+
+    function onFocus() {
+      field!.classList.add('is-focus');
+      lift();
+    }
+
+    function onBlur() {
+      field!.classList.remove('is-focus');
+      const isEmpty = input!.value.length === 0;
+      const wasUp = field!.classList.contains('is-up');
+      if (isEmpty && wasUp) {
+        // label fades out in place (no movement)
+        lab!.style.transition = 'opacity .18s';
+        lab!.style.opacity = '0';
+        setGap(false);
+        setTimeout(() => {
+          if (!field!.isConnected) return;
+          // instantly freeze transform at center before restoring — no animation
+          field!.classList.remove('is-up');
+          lab!.style.transition = 'none';
+          lab!.style.transform = 'none';
+          lab!.style.opacity = '0';
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            lab!.style.transition = '';
+            lab!.style.transform = '';
+            lab!.style.opacity = '';
+          }));
+          // placeholder reveals left → right
+          ph!.style.clipPath = 'inset(0 100% 0 0)';
+          void ph!.offsetWidth;
+          ph!.style.transition = 'clip-path .18s cubic-bezier(.2,.8,.2,1)';
+          ph!.style.clipPath = 'inset(0 0% 0 0)';
+          setTimeout(() => { ph!.style.transition = ''; ph!.style.clipPath = ''; }, 200);
+        }, 200);
+      } else {
+        lift();
+      }
+    }
+
+    input.addEventListener('focus', onFocus);
+    input.addEventListener('blur', onBlur);
+    input.addEventListener('input', lift);
+    lift();
+
+    return () => {
+      input.removeEventListener('focus', onFocus);
+      input.removeEventListener('blur', onBlur);
+      input.removeEventListener('input', lift);
+    };
+  }, [formKey]);
 
   return (
     <div style={{position: 'relative'}}>
@@ -64,13 +134,23 @@ export default function NewsletterForm(): React.ReactElement {
           <div className="col-lg-5 mx-auto">
             <div className="row g-2 align-items-center">
               <div className="col">
-                <input
-                  className={`newsletter-input${error ? ' is-invalid' : ''}`}
-                  id="nl-email" name="email" type="email"
-                  placeholder="Please enter your email address" maxLength={320}
-                  aria-invalid={!!error}
-                  onInput={() => error && setError('')}
-                />
+                <div className={`nl-field${error ? ' is-invalid' : ''}`} ref={fieldRef}>
+                  <div className="nl-box">
+                    <input
+                      className="nl-input"
+                      id="nl-email" name="email" type="email"
+                      placeholder="Please enter your email"
+                      maxLength={320}
+                      aria-invalid={!!error}
+                      onInput={() => error && setError('')}
+                    />
+                    <span className="nl-line" aria-hidden="true">
+                      <i className="nl-l" /><i className="nl-g" /><i className="nl-r" />
+                    </span>
+                    <label className="nl-lab" htmlFor="nl-email">Email{' '}</label>
+                    <span className="nl-ph" aria-hidden="true">Please enter your email</span>
+                  </div>
+                </div>
               </div>
               <div className="col-auto">
                 <button type="submit" className="btn btn-sm btn-secondary-outline2" disabled={submitting}>

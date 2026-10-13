@@ -199,6 +199,9 @@ export default function ConsultationForm(): React.ReactElement {
                   className={`consult-chip${active ? ' is-active' : ''}`}
                   aria-pressed={active}
                   onClick={() => toggleTopic(t)}>
+                  <i aria-hidden="true">
+                    <svg viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.4" /></svg>
+                  </i>
                   {t}
                 </button>
               );
@@ -228,10 +231,13 @@ export default function ConsultationForm(): React.ReactElement {
           <label className="d-flex align-items-start gap-2" style={{cursor: 'pointer'}}>
             <input
               type="checkbox"
+              className="consent-check-input"
               checked={consented}
               onChange={(e) => { setConsented(e.target.checked); if (e.target.checked) setConsentRequired(false); }}
-              style={{marginTop: '3px', flexShrink: 0}}
             />
+            <span className={`consent-box${consented ? ' is-checked' : ''}`} aria-hidden="true">
+              <svg viewBox="0 0 18 18"><path d="M3.5 9.4l3.4 3.4L14.5 5" /></svg>
+            </span>
             <span className="text-sub small">
               The consultation is delivered jointly by OvenMedia Labs (software) and Embrace, OvenMedia Labs' infrastructure partner (infrastructure). I consent to the information submitted above being shared with Embrace solely for the purpose of this consultation.
             </span>

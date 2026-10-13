@@ -179,6 +179,9 @@ export default function EnterpriseConsultForm(): React.ReactElement {
                   className={`consult-chip${active ? ' is-active' : ''}`}
                   aria-pressed={active}
                   onClick={() => toggleInterest(t)}>
+                  <i aria-hidden="true">
+                    <svg viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.4" /></svg>
+                  </i>
                   {t}
                 </button>
               );

@@ -2566,6 +2566,8 @@ html.plugin-blog article [id] {
 
 /* === OME Cloud Consultation form === */
 .consult-card {
+    --chip-ease: cubic-bezier(.2,.8,.2,1);
+    --chip-spring: cubic-bezier(.34,1.45,.64,1);
     background: var(--bg-middle);
     border-radius: 20px;
     padding: clamp(1.5rem, 4vw, 3rem);
@@ -2580,6 +2582,7 @@ html.plugin-blog article [id] {
 .enterprise-consult-card .consult-req { color: var(--brand-secondary); }
 .enterprise-consult-card .consult-chip:hover { border-color: var(--brand-secondary); }
 .enterprise-consult-card .consult-chip.is-active { background: var(--brand-secondary); border-color: var(--brand-secondary); }
+.enterprise-consult-card .consult-chip:focus-visible { outline-color: var(--brand-secondary); }
 .enterprise-consult-card .consult-input:focus { border-color: var(--brand-secondary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-secondary), transparent 82%); }
 .consult-input {
     width: 100%; padding: 0.7rem 0.95rem;
@@ -2603,17 +2606,46 @@ html.plugin-blog article [id] {
 .consult-textarea { display: block; resize: vertical; min-height: 120px; }
 .consult-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .consult-chip {
+    display: inline-flex; align-items: center;
     padding: 0.45rem 0.9rem; border-radius: 99px; cursor: pointer;
     background: rgba(10, 17, 34, 0.5);
     border: 1px solid transparent; color: var(--text-sub2);
     font: 500 0.8rem/1 var(--font-sans);
-    transition: all 0.2s ease;
+    transition: background-color .35s var(--chip-ease), color .3s var(--chip-ease),
+                border-color .3s var(--chip-ease), padding .45s var(--chip-spring),
+                transform .4s var(--chip-spring);
 }
 .consult-chip:hover { background: var(--bg-body); border-color: var(--company-primary); color: var(--text-main); }
+.consult-chip:active { transform: scale(.94); }
+.consult-chip:focus-visible { outline: 2px solid var(--company-primary); outline-offset: 3px; }
+.consult-chip i {
+    display: grid; place-items: center;
+    width: 0; height: 14px; margin-right: 0;
+    overflow: hidden; opacity: 0;
+    transition: width .45s var(--chip-spring), margin .45s var(--chip-spring), opacity .25s var(--chip-ease);
+}
+.consult-chip i svg {
+    width: 13px; height: 13px; flex: none;
+    fill: none; stroke: currentColor; stroke-width: 2.6;
+    stroke-linecap: round; stroke-linejoin: round;
+}
 .consult-chip.is-active {
     background: var(--company-primary);
     border-color: var(--company-primary); color: var(--text-main);
+    padding-left: 0.5rem;
 }
+.consult-chip.is-active i { width: 13px; margin-right: 4px; opacity: 1; }
+.consent-check-input { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; }
+.consent-box {
+    position: relative; width: 18px; height: 18px; flex: none; margin-top: 2px;
+    border-radius: 5px; box-shadow: inset 0 0 0 2px var(--text-sub2);
+    transition: background-color .25s, box-shadow .25s, transform .35s var(--chip-spring);
+}
+.consent-box svg { position: absolute; inset: 2px; width: 14px; height: 14px; fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.consent-box path { stroke-dasharray: 18; stroke-dashoffset: 18; transition: stroke-dashoffset .06s var(--chip-ease); }
+.consent-box.is-checked { background: var(--company-primary); box-shadow: none; animation: consent-pop .4s var(--chip-spring); }
+.consent-box.is-checked path { stroke-dashoffset: 0; transition: stroke-dashoffset .3s var(--chip-ease) .05s; }
+@keyframes consent-pop { 40% { transform: scale(1.18); } }
 .consult-input.is-invalid { border-color: var(--company-accent); }
 .consult-input.is-invalid:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--company-accent), transparent 82%); }
 .consult-field-error { display: block; margin-top: 0.35rem; color: var(--company-accent); font-size: 0.8rem; }
@@ -2630,6 +2662,41 @@ html.plugin-blog article [id] {
     background: var(--bg-surface);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--text-sub), transparent 82%);
 }
+.nl-field { position: relative; }
+.nl-box { position: relative; height: 42px; }
+.nl-input {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    padding: 0 14px; border: 0; outline: 0; border-radius: 10px;
+    background: color-mix(in srgb, var(--bg-surface), transparent 50%);
+    font: 400 0.95rem/1 var(--font-sans); color: var(--text-main);
+}
+.nl-input::placeholder { color: transparent; }
+.nl-input:focus-visible { outline: none; }
+.nl-ph {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font: 400 0.95rem/1 var(--font-sans); color: var(--text-sub2);
+    pointer-events: none; white-space: nowrap;
+    opacity: 1; transition: opacity .15s;
+}
+.nl-field.is-up .nl-ph { opacity: 0; }
+.nl-line { position: absolute; inset: 0; display: flex; pointer-events: none; border-radius: 10px; }
+.nl-line i { display: block; border: 1px solid rgba(255,255,255,.12); transition: border-color .3s; }
+.nl-line .nl-l { width: 11px; border-right: 0; border-radius: 10px 0 0 10px; }
+.nl-line .nl-g { width: var(--gap, 0px); border-left: 0; border-right: 0; transition: width .35s cubic-bezier(.2,.8,.2,1), border-color .3s; }
+.nl-line .nl-r { flex: 1; border-left: 0; border-radius: 0 10px 10px 0; }
+.nl-field.is-up .nl-line .nl-g { border-top-color: transparent !important; }
+.nl-field.is-focus .nl-line i { border-color: var(--brand-secondary); }
+.nl-field.is-invalid .nl-line i { border-color: var(--company-accent); }
+.nl-lab {
+    position: absolute; left: 14px; top: 12px;
+    padding: 0; margin-left: 0;
+    font: 400 0.95rem/1 var(--font-sans); color: transparent;
+    transform-origin: 0 0; pointer-events: none; white-space: nowrap;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), color .2s .1s;
+}
+.nl-field.is-up .nl-lab { transform: translate(1px, -18px) scale(.78); color: var(--text-sub); }
+.nl-field.is-focus .nl-lab { color: var(--brand-secondary); }
+.nl-field.is-invalid .nl-lab { color: var(--company-accent); }
 .consult-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 .consult-error { color: var(--company-accent); font-size: 0.9rem; }
 .consult-done { padding: clamp(1.5rem, 5vw, 3rem) 1rem; }
