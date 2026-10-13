@@ -4,7 +4,7 @@
 
 ---
 
-## Page: OvenMediaEngine (https://ovenmedialabs.com/)
+## Page: OvenMediaEngine (https://ovenmedia.com/)
 
 OvenMediaEngine, Live Streaming Server. Deliver high-definition live stream to hundreds of thousands of viewers in under a second, all from a server you deploy on your own infrastructure.
 
@@ -66,7 +66,7 @@ Get the complete OvenMediaEngine Enterprise experience on AWS, billed by the hou
 
 An open-source sub-second latency streaming server with WebRTC, LL-HLS, and SRT. AGPLv3 license (alternative commercial licensing available). Written in C++. As the foundation of the OvenMediaEngine family, it gives you full control to build, customize, and own your real-time media service.
 
-Stats: 3,200+ GitHub stars. 1,100,000+ cumulative Docker pulls. 1,100+ forks.
+Stats: 3,300+ GitHub stars. 1,100,000+ cumulative Docker pulls. 1,100+ forks.
 
 Supported platforms: Docker, Ubuntu 18+, Rocky Linux 8+, AlmaLinux 8+, Fedora 28+.
 
@@ -81,7 +81,7 @@ Ecosystem:
 
 ---
 
-## Page: OvenMedia Cloud (https://ovenmedialabs.com/om-cloud)
+## Page: OvenMedia Cloud (https://ovenmedia.com/om-cloud)
 
 Fully Managed Live Streaming By the OvenMediaEngine Team. Leave Live Streaming to the OvenMediaEngine Team. From architecture and customization to deployment, integration, and operations, the OvenMediaEngine team handles it all with cost efficiency built in. You focus on your business. We handle the streaming. Consultation is free. Billing begins after the final environment is approved and activated.
 
@@ -164,40 +164,7 @@ Migration steps:
 
 ---
 
-## Page: What is Sub-Second Latency? (https://ovenmedialabs.com/latency)
-
-Real-Time is Not 10 Seconds Late. In the era of live interaction, Live should mean Now. Understand why latency occurs and how we achieved Sub-Second Latency.
-
-### The Problem
-
-Why is your stream delayed? Many people believe their live stream is happening in real-time, but they are actually watching the past.
-
-The "Chunk" Bottleneck: Legacy protocols like HLS or DASH slice video into "Chunks" (segments) of 2 to 10 seconds. Players typically buffer 3 of these chunks to ensure stability. For example, 3 chunks x 10 seconds = 30 seconds delay. This buffering creates a massive gap between the streamer and the viewer.
-
-Latency comparison:
-- HLS and DASH: 6 to 10 seconds or more. Passive viewing only. Impossible to have real-time chat.
-- Low Latency HLS (LL-HLS): 2 to 4 seconds. Improved, but still feels slightly off for live interaction.
-- WebRTC and SRT: Under 1 second. Sub-second latency. True real-time synchronization.
-
-### What Can You Do with Zero Delay?
-
-- Live Auction and Commerce: Bids must happen instantly. A 5-second delay could mean losing a deal. Ensure fair, real-time bidding.
-- iGaming and Betting: Trust is built on visibility. Players need to see the card turn or the ball drop the moment it happens.
-- Interactive Webinar: Q&A sessions should not be awkward. Have a natural conversation with thousands of viewers.
-
-### Our Solution: Engineered for Sub-Second
-
-OvenMedia Labs' mission is to democratize high-quality, ultra-low latency streaming. We combined the best open-source protocols to create a powerful engine.
-
-WebRTC: The gold standard for real-time communication. We optimized WebRTC for one-to-many broadcasting, overcoming its traditional scaling limits. Frame-based rendering. Sub-500ms latency. No plugins required. Modern browser support.
-
-LL-HLS: Extended HLS protocol. With Chunked Transfer Encoding and HTTP/2, we cut typical HLS latency from tens of seconds down to about 2 to 3 seconds. Firewall friendly (HTTP/TCP based). HLS-compatible with existing CDN. ABR support.
-
-SRT: Quality in, quality out. We use SRT instead of aging RTMP to keep both ingress and egress stable, even over unreliable public networks or between sites. Reliable end-to-end packet loss recovery. Low jitter. Modern standard.
-
----
-
-## Page: About OvenMedia Labs (https://ovenmedialabs.com/company)
+## Page: About OvenMedia Labs (https://ovenmedia.com/company)
 
 Media Technology Experts Group. WE DO ONE THING. We define media technology for the real-time world.
 

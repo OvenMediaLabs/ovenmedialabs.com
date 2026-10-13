@@ -65,7 +65,7 @@ const PREVIEW_SOURCE = process.env.OML_PREVIEW_SOURCE || '';
 // schema (BreadcrumbList on docs, BlogPosting on posts) is emitted
 // automatically by Docusaurus; SoftwareApplication for the products
 // lives in the respective marketing pages.
-const SITE_URL = 'https://ovenmedialabs.com';
+const SITE_URL = 'https://ovenmedia.com';
 const structuredData = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -119,7 +119,7 @@ const config: Config = {
     faster: true,
   },
 
-  url: 'https://ovenmedialabs.com',
+  url: 'https://ovenmedia.com',
   baseUrl: '/',
 
   organizationName: 'OvenMediaLabs',
@@ -332,6 +332,8 @@ const config: Config = {
           ignorePatterns: [
             '/search',
             '/404',
+            '/ome',
+            '/ome-enterprise',
             '/blog/archive',
             '/blog/tags/**',
             '/blog/authors/**',

@@ -4,9 +4,9 @@
  * The three old GitBook domains are forwarded by Squarespace Domain
  * Forwarding (301, "Maintain paths"):
  *
- *   docs.ovenmediaengine.com/*            → ovenmedialabs.com/docs/ome/*
- *   docs.enterprise.ovenmediaengine.com/* → ovenmedialabs.com/docs/ome-enterprise/*
- *   docs.ovenplayer.com/*                 → ovenmedialabs.com/docs/ovenplayer/*
+ *   docs.ovenmediaengine.com/*            → ovenmedia.com/docs/ome/*
+ *   docs.enterprise.ovenmediaengine.com/* → ovenmedia.com/docs/ome-enterprise/*
+ *   docs.ovenplayer.com/*                 → ovenmedia.com/docs/ovenplayer/*
  *
  * Squarespace appends the original path verbatim, so GitBook's
  * version / locale / "guide" path segments survive the forward and
