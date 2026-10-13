@@ -501,6 +501,23 @@ html.plugin-blog .markdown img.blog-hero {
   border-radius: 12px;
 }
 
+/* Hero with a credit line (`image_credit` frontmatter): the figure owns the
+ * bottom spacing so the caption sits right under the image. */
+html.plugin-blog .markdown .blog-hero-figure {
+  margin: 0 0 1.75rem 0;
+}
+html.plugin-blog .markdown .blog-hero-figure img.blog-hero {
+  margin-bottom: 0.4rem;
+}
+html.plugin-blog .markdown .blog-hero-figure figcaption {
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+html.plugin-blog .markdown .blog-hero-figure figcaption a {
+  color: inherit;
+}
+
 /* Image caption: ![Caption](./image.png) renders via the custom MDXComponents
  * img override as <figure class="img-figure"><img /><figcaption>...</figcaption></figure>.
  * Images with no alt text stay as plain <img> with no figure wrapper. */

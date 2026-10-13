@@ -62,3 +62,8 @@ event:
   label: Event
   permalink: /event
   description: Webinars, meetups, talks, and other events that are not trade shows.
+
+av1:
+  label: AV1
+  permalink: /av1
+  description: Posts about the AV1 video codec.

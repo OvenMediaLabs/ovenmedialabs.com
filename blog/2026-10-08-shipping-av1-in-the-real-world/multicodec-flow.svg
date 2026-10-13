@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" font-family="Inter, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#898781"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="420" fill="#fcfcfb"/>
+  <text x="30" y="40" font-size="20" font-weight="700" fill="#0b0b0b">Multi-Codec Delivery with OvenMediaEngine</text>
+  <text x="30" y="64" font-size="13" fill="#52514e">One H.264 or AV1 input → AV1 for capable devices, H.264 fallback for the rest</text>
+  <text x="110" y="104" font-size="12" font-weight="700" fill="#898781" text-anchor="middle" letter-spacing="1">INPUT</text>
+  <text x="380" y="104" font-size="12" font-weight="700" fill="#898781" text-anchor="middle" letter-spacing="1">OVENMEDIAENGINE</text>
+  <text x="660" y="104" font-size="12" font-weight="700" fill="#898781" text-anchor="middle" letter-spacing="1">PLAYLISTS</text>
+  <text x="880" y="104" font-size="12" font-weight="700" fill="#898781" text-anchor="middle" letter-spacing="1">VIEWERS</text>
+  <rect x="30" y="180" width="160" height="70" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="110" y="208" text-anchor="middle" font-size="14" font-weight="700" fill="#0b0b0b">H.264 or AV1</text>
+  <text x="110" y="228" text-anchor="middle" font-size="11" fill="#52514e">existing encoder</text>
+  <rect x="230" y="116" width="300" height="236" rx="12" fill="#eef4fc" stroke="#2a78d6" stroke-width="1.5"/>
+  <text x="250" y="142" font-size="12" font-weight="700" fill="#2a78d6">OutputProfile · multi_codec</text>
+  <rect x="250" y="156" width="260" height="70" rx="8" fill="#2a78d6"/>
+  <text x="380" y="184" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">AV1 Encoder (VPU / GPU)</text>
+  <text x="380" y="203" text-anchor="middle" font-size="11" fill="#ffffff">av1_1080p · ~2 Mbps</text>
+  <text x="380" y="218" text-anchor="middle" font-size="10" fill="#ffffff">Passed through if the input is AV1</text>
+  <rect x="250" y="246" width="260" height="70" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="380" y="274" text-anchor="middle" font-size="13" font-weight="700" fill="#0b0b0b">H.264 Encoder (VPU / GPU)</text>
+  <text x="380" y="293" text-anchor="middle" font-size="11" fill="#52514e">h264_1080p · ~4 Mbps</text>
+  <text x="380" y="308" text-anchor="middle" font-size="10" fill="#52514e">Passed through if the input is H.264</text>
+  <text x="380" y="338" text-anchor="middle" font-size="11" fill="#52514e">Audio: AAC (LL-HLS) · Opus (WebRTC)</text>
+  <line x1="190" y1="205" x2="246" y2="191" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="190" y1="225" x2="246" y2="281" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="570" y="156" width="180" height="70" rx="8" fill="#ffffff" stroke="#2a78d6"/>
+  <text x="584" y="182" font-size="13" font-weight="700" fill="#0b0b0b">AV1</text>
+  <text x="584" y="200" font-size="11" fill="#52514e">av1.m3u8 (LL-HLS)</text>
+  <text x="584" y="215" font-size="11" fill="#52514e">av1 (WebRTC)</text>
+  <rect x="570" y="246" width="180" height="70" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="584" y="272" font-size="13" font-weight="700" fill="#0b0b0b">H.264 (fallback)</text>
+  <text x="584" y="290" font-size="11" fill="#52514e">h264.m3u8 (LL-HLS)</text>
+  <text x="584" y="305" font-size="11" fill="#52514e">h264 (WebRTC)</text>
+  <line x1="510" y1="191" x2="566" y2="191" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="510" y1="281" x2="566" y2="281" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="790" y="156" width="180" height="70" rx="8" fill="#2a78d6"/>
+  <text x="880" y="184" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">AV1-capable devices</text>
+  <text x="880" y="203" text-anchor="middle" font-size="11" fill="#ffffff">~50% less traffic</text>
+  <rect x="790" y="246" width="180" height="70" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="880" y="274" text-anchor="middle" font-size="13" font-weight="700" fill="#0b0b0b">Other devices</text>
+  <text x="880" y="293" text-anchor="middle" font-size="11" fill="#52514e">plays H.264 as before</text>
+  <line x1="750" y1="191" x2="786" y2="191" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="750" y1="281" x2="786" y2="281" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="880" y="338" text-anchor="middle" font-size="11" fill="#52514e">Selected by client detection (3.2)</text>
+  <rect x="30" y="372" width="940" height="34" rx="6" fill="#eef4fc"/>
+  <text x="500" y="394" text-anchor="middle" font-size="12" fill="#0b0b0b"><tspan font-weight="700">Key point:</tspan> BypassIfMatch passes through the codec that matches the input, so H.264 or AV1 input needs a single encode.</text>
+</svg>

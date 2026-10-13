@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 400" width="1000" height="400" font-family="Inter, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#898781"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="400" fill="#fcfcfb"/>
+  <text x="30" y="40" font-size="20" font-weight="700" fill="#0b0b0b">Keep H.264 Ingest, Deliver AV1 to Viewers</text>
+  <text x="30" y="64" font-size="13" fill="#52514e">Example: 1080p30 live stream, 1,000 concurrent viewers</text>
+  <rect x="30" y="110" width="170" height="70" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="115" y="138" text-anchor="middle" font-size="13" font-weight="700" fill="#0b0b0b">Broadcaster</text>
+  <text x="115" y="158" text-anchor="middle" font-size="11" fill="#52514e">H.264 · 4 Mbps (unchanged)</text>
+  <line x1="200" y1="145" x2="246" y2="145" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="250" y="110" width="190" height="70" rx="8" fill="#2a78d6"/>
+  <text x="345" y="138" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">OvenMediaEngine</text>
+  <text x="345" y="158" text-anchor="middle" font-size="11" fill="#ffffff">H.264 → AV1 (VPU / GPU)</text>
+  <line x1="440" y1="145" x2="486" y2="145" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="490" y="110" width="170" height="70" rx="8" fill="#ffffff" stroke="#2a78d6"/>
+  <text x="575" y="138" text-anchor="middle" font-size="13" font-weight="700" fill="#0b0b0b">Viewers</text>
+  <text x="575" y="158" text-anchor="middle" font-size="11" fill="#52514e">AV1 · ~2 Mbps each</text>
+  <text x="690" y="138" font-size="12" fill="#52514e">Same picture quality,</text>
+  <text x="690" y="156" font-size="12" fill="#52514e">about half the bitrate per viewer</text>
+  <text x="30" y="230" font-size="12" font-weight="700" fill="#898781" letter-spacing="1">TOTAL DELIVERY TRAFFIC (1,000 VIEWERS)</text>
+  <text x="30" y="270" font-size="13" font-weight="700" fill="#0b0b0b">H.264 delivery</text>
+  <text x="30" y="287" font-size="11" fill="#52514e">4 Mbps × 1,000</text>
+  <rect x="200" y="256" width="640" height="30" rx="4" fill="#c9c8c2"/>
+  <text x="852" y="276" font-size="13" font-weight="700" fill="#0b0b0b">4 Gbps</text>
+  <text x="30" y="330" font-size="13" font-weight="700" fill="#0b0b0b">AV1 delivery</text>
+  <text x="30" y="347" font-size="11" fill="#52514e">2 Mbps × 1,000</text>
+  <rect x="200" y="316" width="320" height="30" rx="4" fill="#2a78d6"/>
+  <text x="532" y="336" font-size="13" font-weight="700" fill="#0b0b0b">2 Gbps  (−50%, about 900 GB less per hour)</text>
+  <text x="30" y="385" font-size="11" fill="#898781">Bitrates follow the simplified example in Section 2.2. Actual savings depend on content, encoder and settings.</text>
+</svg>
