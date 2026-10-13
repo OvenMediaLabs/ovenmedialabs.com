@@ -59,6 +59,78 @@ import OrbitDot from '@site/src/components/OrbitDot';
       publisher: {'@id': 'https://ovenmedia.com/#organization'},
     })}
   </script>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is OvenMediaEngine?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'OvenMediaEngine (OME) is a free, open-source, self-hosted live streaming server developed by OvenMedia Labs. It enables sub-second latency streaming using WebRTC and supports LL-HLS, SRT, and other streaming protocols. Designed for high-quality, large-scale live streaming, OvenMediaEngine includes an embedded live transcoder, adaptive bitrate streaming, and Origin-Edge clustering.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What are the key advantages of OvenMediaEngine?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "OvenMediaEngine combines sub-second latency, scalability, flexibility, and cost efficiency in a self-hosted streaming solution. Key advantages include sub-second streaming with WebRTC and SRT, and low-latency delivery with LL-HLS; Origin-Edge clustering for distributing live streams to large audiences; a built-in transcoder and adaptive bitrate streaming without requiring a separate transcoding server; support for multiple ingest and delivery protocols; full control to deploy and customize streaming infrastructure on your own servers or cloud environment; and the ability to optimize infrastructure and streaming workflows based on your service requirements.",
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is OvenMediaEngine free?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. The open-source edition of OvenMediaEngine is free to download, use, and modify under the AGPLv3 license. Commercial use is permitted subject to AGPLv3 requirements, including applicable source code disclosure obligations. For organizations that require a commercial license without AGPLv3 source disclosure obligations, additional enterprise features, and professional support, OvenMediaEngine Enterprise is available as a paid solution.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What protocols does OvenMediaEngine support?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'OvenMediaEngine supports multiple protocols for live stream ingest and delivery. For ingest: WebRTC/WHIP, RTMP/Enhanced RTMP, SRT, MPEG-2 TS, and RTSP Pull. For delivery: WebRTC, Low-Latency HLS (LL-HLS), HLS, and SRT. OvenMediaEngine can ingest live streams, process them through its embedded live transcoder, and deliver them using different protocols depending on playback requirements.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What can OvenMediaEngine be used for?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "OvenMediaEngine can be used to build a wide range of real-time and low-latency streaming services, including interactive live streaming, live commerce, sports broadcasting, iGaming, video conferencing, remote collaboration, IP camera monitoring, and live surveillance. Its flexible architecture also supports custom streaming workflows that require multiple protocols, transcoding, access control, and scalable distribution.",
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do I get started with OvenMediaEngine?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'You can get started by installing the open-source OvenMediaEngine using Docker or following the official installation guide at ovenmedia.com/docs/ome. A Quick Start Guide is available at ovenmedia.com/docs/ome/quick-start. The source code and releases are available at github.com/OvenMediaLabs/OvenMediaEngine. After installation, you can publish a live stream using an encoder such as OBS Studio and play it back through WebRTC or LL-HLS using OvenPlayer.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is OvenMediaEngine Enterprise?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "OvenMediaEngine Enterprise is a commercial, production-ready, self-hosted live streaming server package built on OvenMediaEngine. It provides additional enterprise-grade capabilities, including hardware-accelerated transcoding, a Web Console for management and monitoring, advanced operational features, long-term support, and direct technical assistance from the OvenMediaEngine development team. Organizations can deploy OvenMediaEngine Enterprise on their own infrastructure or supported cloud environments.",
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the difference between OvenMediaEngine and OvenMediaEngine Enterprise?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "OvenMediaEngine is the free, AGPLv3-licensed open-source streaming server, while OvenMediaEngine Enterprise is a commercial package designed for organizations that require additional capabilities and professional support. Both share the core live streaming technology, including WebRTC, LL-HLS, SRT, embedded live transcoding, and Origin-Edge clustering. OvenMediaEngine Enterprise additionally provides a commercial license for use in proprietary services without AGPLv3 source disclosure obligations; hardware-accelerated encoding and decoding using supported devices including NVIDIA GPUs and NETINT Quadra VPUs; a browser-based Web Console for stream management, configuration, monitoring, and operational tools; additional monitoring, security, and high-availability capabilities; ongoing maintenance, updates, and security patches with long-term support; direct access to OvenMediaEngine's core engineering team, with additional support options available; and enterprise-specific development and integration options. Hardware acceleration is no longer available in the open-source edition in releases after v0.20.5.",
+          },
+        },
+      ],
+    })}
+  </script>
 </Head>
 
 <section id="hero-section" className="hero-bg-ome full-page-section d-flex align-items-center position-relative text-center">

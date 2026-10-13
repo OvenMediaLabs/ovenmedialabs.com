@@ -21,7 +21,7 @@ export default function Layout({title, children, ...props}: Props): React.ReactN
   return (
     <OriginalLayout title={title} {...props}>
       {children}
-      {showBlogListTitle && <Head><title>OvenMedia Blog</title></Head>}
+      {showBlogListTitle && <Head><title>OvenMedia Blog | OvenMediaEngine Team's Insights</title></Head>}
     </OriginalLayout>
   );
 }

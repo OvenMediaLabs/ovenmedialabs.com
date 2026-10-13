@@ -17,7 +17,7 @@
     "slug": "your-live-stream-is-up-that-doesnt-mean-its-healthy",
     "permalink": "/blog/your-live-stream-is-up-that-doesnt-mean-its-healthy",
     "title": "Your Live Stream Is Up. That Doesn't Mean It's Healthy",
-    "description": "An OvenMediaEngine dashboard, built on Prometheus and Grafana, that shows whether the problem is the source, the server, or one viewer.",
+    "description": "Monitor live stream health with OvenMediaEngine Enterprise, Prometheus, and Grafana. Diagnose ingest issues, transcoding delays, and viewer problems.",
     "tags": [
       "ome",
       "tutorial"
@@ -30,7 +30,7 @@
     "slug": "from-flame-to-honey-badger",
     "permalink": "/blog/from-flame-to-honey-badger",
     "title": "From Flame to Honey Badger: From AirenSoft to OvenMedia Labs",
-    "description": "AirenSoft is now OvenMedia Labs, and our symbol has changed from a flame to a honey badger. Here's the sixteen-year story behind the rename, and why our focus is now entirely on OvenMediaEngine.",
+    "description": "Learn why AirenSoft became OvenMedia Labs, replaced its flame logo with a honey badger, and dedicated its future to OvenMediaEngine after 16 years.",
     "tags": [
       "news"
     ],
@@ -41,8 +41,8 @@
   {
     "slug": "llhls-hls-channel-redundancy-high-availability",
     "permalink": "/blog/llhls-hls-channel-redundancy-high-availability",
-    "title": "LL-HLS / HLS Channel Redundancy: High Availability That Stays Live Through Failures",
-    "description": "Real LL-HLS / HLS channel redundancy comes down to keeping two Origins, Primary and Backup, in sync. Here is what has to line up in the encoder-origin path, especially the timeline and the segment numbers.",
+    "title": "LL-HLS/HLS Channel Redundancy and Failover",
+    "description": "See how OvenMediaEngine Enterprise keeps LL-HLS/HLS streams playing during CDN origin failover with synchronized timelines and segment numbering.",
     "tags": [
       "llhls",
       "tutorial",
@@ -56,7 +56,7 @@
     "slug": "discontinuing-hardware-acceleration-ome",
     "permalink": "/blog/discontinuing-hardware-acceleration-ome",
     "title": "Open-Source Edition: A Note on Discontinuing Hardware Acceleration",
-    "description": "Starting with the next release, hardware-accelerated features including NVIDIA and Intel QuickSync support will no longer be available in the open-source edition of OvenMediaEngine.",
+    "description": "Hardware acceleration is removed from new open-source OvenMediaEngine releases after v0.20.5. Existing versions still work, while Enterprise retains support.",
     "tags": [
       "ome",
       "news",
@@ -69,8 +69,8 @@
   {
     "slug": "on-demand-rtsp-cameras-with-webrtc",
     "permalink": "/blog/on-demand-rtsp-cameras-with-webrtc",
-    "title": "Managing Hundreds of RTSP Cameras with a Single Server, Using On-Demand Live WebRTC",
-    "description": "A new architecture for CCTV monitoring powered by OvenMediaEngine — pull RTSP only when someone watches, scale horizontally without state.",
+    "title": "On-Demand RTSP to WebRTC for IP Cameras",
+    "description": "See how OvenMediaEngine pulls RTSP camera feeds only when viewed and delivers them via WebRTC, reducing idle resource use in large-scale CCTV monitoring.",
     "tags": [
       "webrtc",
       "sub-second-latency",

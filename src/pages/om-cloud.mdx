@@ -77,6 +77,46 @@ import OmeProductNav from '@site/src/components/OmeProductNav';
       keywords: 'fully managed live streaming, managed streaming service, WebRTC, LL-HLS, SRT, OvenMediaEngine, real-time streaming',
     })}
   </script>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'What is OvenMedia Cloud?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "OvenMedia Cloud is a fully managed live streaming service provided by OvenMedia Labs, the team behind OvenMediaEngine. Unlike a standardized streaming platform, OvenMedia Cloud is designed around each customer's specific requirements. The OvenMediaEngine team handles streaming architecture, infrastructure configuration, customization, deployment, integration, transcoding optimization, monitoring, maintenance, and operations. Customers can use their preferred infrastructure or have the OvenMediaEngine team arrange and manage infrastructure based on their needs.",
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is the difference between OvenMediaEngine Enterprise and OvenMedia Cloud?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "OvenMediaEngine Enterprise is a self-hosted software package that customers deploy and operate within their own infrastructure, with technical support provided according to their support plan. OvenMedia Cloud is a fully managed service in which the OvenMediaEngine team designs, deploys, and operates the streaming environment for the customer. In short, OvenMediaEngine Enterprise provides the software and tools to operate your own streaming service, while OvenMedia Cloud provides the engineering expertise and managed operations to handle the streaming infrastructure and workflow for you.",
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is the initial OvenMedia Cloud consultation free?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes. The initial consultation for OvenMedia Cloud is free. Customers can discuss their streaming requirements, architecture, protocols, expected traffic, deployment regions, and operational needs directly with the OvenMediaEngine team. Billing begins after the final streaming environment has been approved and activated.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Who operates OvenMedia Cloud?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: "OvenMedia Cloud is operated by OvenMedia Labs, the company that develops and maintains OvenMediaEngine. The core engineering team is directly involved in designing, configuring, deploying, optimizing, and maintaining customer streaming environments. Infrastructure is selected according to each customer's requirements and may include customer-provided servers, cloud infrastructure, or infrastructure arranged through service providers.",
+          },
+        },
+      ],
+    })}
+  </script>
 </Head>
 
 <style>{`
