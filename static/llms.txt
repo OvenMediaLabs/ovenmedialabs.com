@@ -4,33 +4,32 @@
 
 ## Products
 
-- [OvenMedia Cloud](https://ovenmedialabs.com/om-cloud): Fully managed live streaming service designed, deployed, and operated by the OvenMediaEngine core team.
-- [OvenMediaEngine Enterprise](https://ovenmedialabs.com/): Commercial edition of OvenMediaEngine with Web Console, advanced security, high availability, and direct-to-engineer support. Self-hosted, per-instance pricing.
+- [OvenMedia Cloud](https://ovenmedia.com/om-cloud): Fully managed live streaming service designed, deployed, and operated by the OvenMediaEngine core team.
+- [OvenMediaEngine Enterprise](https://ovenmedia.com/): Commercial edition of OvenMediaEngine with Web Console, advanced security, high availability, and direct-to-engineer support. Self-hosted, per-instance pricing.
 - [OvenMediaEngine Enterprise on AWS (CPU)](https://aws.amazon.com/marketplace/pp/prodview-66xy6t4xk56xs): OvenMediaEngine Enterprise on AWS Marketplace for CPU-based instances. 14-day free trial, hourly billing.
 - [OvenMediaEngine Enterprise on AWS (GPU)](https://aws.amazon.com/marketplace/pp/prodview-xgqlshxeegf5c): OvenMediaEngine Enterprise on AWS Marketplace for GPU-accelerated instances. 14-day free trial, hourly billing.
-- [OvenMediaEngine (Open Source)](https://github.com/OvenMediaLabs/OvenMediaEngine): Open-source (AGPLv3) sub-second latency streaming server supporting WebRTC, LL-HLS, SRT, RTMP, and more. 3,200+ GitHub stars.
+- [OvenMediaEngine (Open Source)](https://github.com/OvenMediaLabs/OvenMediaEngine): Open-source (AGPLv3) sub-second latency streaming server supporting WebRTC, LL-HLS, SRT, RTMP, and more. 3,300+ GitHub stars.
 - [OvenPlayer](https://github.com/OvenMediaLabs/OvenPlayer): Open-source HTML5 JavaScript player supporting WebRTC, LL-HLS, HLS, and DASH with automatic protocol fallback.
 - [OvenLiveKit](https://github.com/OvenMediaLabs/OvenLiveKit-Web): Open-source JavaScript browser-based live encoder SDK using WebRTC/WHIP, targeting OvenMediaEngine.
 
 ## Company
 
-- [About OvenMedia Labs](https://ovenmedialabs.com/company): Media Technology Experts Group. Founded 2010. 16+ years of media technology expertise. 20+ countries with production deployments.
-- [Contact](https://ovenmedialabs.com/company#contact): contact@ovenmedia.com
+- [About OvenMedia Labs](https://ovenmedia.com/company): Media Technology Experts Group. Founded 2010. 16+ years of media technology expertise. 20+ countries with production deployments.
+- [Contact](https://ovenmedia.com/company#contact): contact@ovenmedia.com
 
 ## Documentation
 
-- [OvenMediaEngine Docs](https://ovenmedialabs.com/docs/ome): Installation, configuration, and operation guide for OvenMediaEngine open-source.
-- [OvenMediaEngine Enterprise Docs](https://ovenmedialabs.com/docs/ome-enterprise): Guide for OvenMediaEngine Enterprise features.
-- [OvenPlayer Docs](https://ovenmedialabs.com/docs/ovenplayer): Integration and API reference for OvenPlayer.
+- [OvenMediaEngine Docs](https://ovenmedia.com/docs/ome): Installation, configuration, and operation guide for OvenMediaEngine open-source.
+- [OvenMediaEngine Enterprise Docs](https://ovenmedia.com/docs/ome-enterprise): Guide for OvenMediaEngine Enterprise features.
+- [OvenPlayer Docs](https://ovenmedia.com/docs/ovenplayer): Integration and API reference for OvenPlayer.
 
 ## Resources
 
-- [Tech: Sub-Second Latency](https://ovenmedialabs.com/latency): Technical explanation of why latency occurs in live streaming and how OvenMediaEngine achieves sub-second delivery.
-- [Blog](https://ovenmedialabs.com/blog): Engineering articles from the OvenMediaEngine team.
+- [Blog](https://ovenmedia.com/blog): Engineering articles from the OvenMediaEngine team.
 - [GitHub](https://github.com/OvenMediaLabs): Source code for all OvenMedia Labs open-source projects.
-- [AGPLv3 Compliance](https://ovenmedialabs.com/agplv3): License compliance information for OvenMediaEngine users.
-- [EULA](https://ovenmedialabs.com/eula): End-user license agreement for OvenMediaEngine Enterprise.
+- [AGPLv3 Compliance](https://ovenmedia.com/agplv3): License compliance information for OvenMediaEngine users.
+- [EULA](https://ovenmedia.com/eula): End-user license agreement for OvenMediaEngine Enterprise.
 
 ## Optional: Full Content
 
-- [llms-full.txt](https://ovenmedialabs.com/llms-full.txt): Full text content of all key pages for deeper context.
+- [llms-full.txt](https://ovenmedia.com/llms-full.txt): Full text content of all key pages for deeper context.
