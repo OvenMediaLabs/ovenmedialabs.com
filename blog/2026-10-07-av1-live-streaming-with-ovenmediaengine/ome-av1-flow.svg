@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 420" width="1000" height="420" font-family="Inter, 'Helvetica Neue', Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#898781"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="420" fill="#fcfcfb"/>
+  <text x="30" y="40" font-size="20" font-weight="700" fill="#0b0b0b">AV1 Live Streaming with OvenMediaEngine</text>
+  <text x="30" y="64" font-size="13" fill="#52514e">H.264 · H.265 · AV1 input → hardware AV1 transcoding → LL-HLS / WebRTC delivery</text>
+  <text x="110" y="104" font-size="12" font-weight="700" fill="#898781" text-anchor="middle" letter-spacing="1">INPUT CODEC</text>
+  <text x="440" y="104" font-size="12" font-weight="700" fill="#898781" text-anchor="middle" letter-spacing="1">OVENMEDIAENGINE</text>
+  <text x="790" y="104" font-size="12" font-weight="700" fill="#898781" text-anchor="middle" letter-spacing="1">PUBLISH (AV1)</text>
+  <rect x="30" y="120" width="160" height="56" rx="8" fill="#ffffff" stroke="#2a78d6" stroke-width="1.5"/>
+  <text x="110" y="144" text-anchor="middle" font-size="14" font-weight="700" fill="#0b0b0b">H.264</text>
+  <text x="110" y="163" text-anchor="middle" font-size="11" fill="#2a78d6">most common · biggest saving</text>
+  <rect x="30" y="186" width="160" height="56" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="110" y="210" text-anchor="middle" font-size="14" font-weight="700" fill="#0b0b0b">H.265</text>
+  <text x="110" y="229" text-anchor="middle" font-size="11" fill="#52514e">transcoded to AV1</text>
+  <rect x="30" y="252" width="160" height="56" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="110" y="276" text-anchor="middle" font-size="14" font-weight="700" fill="#0b0b0b">AV1</text>
+  <text x="110" y="295" text-anchor="middle" font-size="11" fill="#52514e">pass-through or re-encode</text>
+  <text x="110" y="332" text-anchor="middle" font-size="11" fill="#898781">E-RTMP · WebRTC/WHIP · OVT …</text>
+  <text x="110" y="348" text-anchor="middle" font-size="11" fill="#898781">(see protocol table, Section 3)</text>
+  <rect x="240" y="116" width="400" height="236" rx="12" fill="#eef4fc" stroke="#2a78d6" stroke-width="1.5"/>
+  <text x="260" y="142" font-size="12" font-weight="700" fill="#2a78d6">Transcoder · OutputProfile</text>
+  <rect x="260" y="160" width="160" height="70" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="340" y="186" text-anchor="middle" font-size="13" font-weight="700" fill="#0b0b0b">Decoder</text>
+  <text x="340" y="204" text-anchor="middle" font-size="11" fill="#52514e">H.264 · H.265 · AV1</text>
+  <text x="340" y="219" text-anchor="middle" font-size="11" fill="#52514e">NETINT · NVIDIA · Software</text>
+  <rect x="460" y="160" width="160" height="70" rx="8" fill="#2a78d6"/>
+  <text x="540" y="188" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">AV1 Encoder</text>
+  <text x="540" y="207" text-anchor="middle" font-size="11" fill="#ffffff">NETINT · NVIDIA · Software</text>
+  <line x1="420" y1="195" x2="456" y2="195" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <rect x="260" y="250" width="360" height="48" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+  <text x="440" y="279" text-anchor="middle" font-size="12" fill="#0b0b0b"><tspan font-weight="700">Audio</tspan>  AAC (for LL-HLS) · Opus (for WebRTC)</text>
+  <text x="440" y="330" text-anchor="middle" font-size="11" fill="#52514e">HWAccels: ni (NETINT VPU) · nv (NVIDIA GPU)</text>
+  <line x1="190" y1="148" x2="236" y2="185" stroke="#2a78d6" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="190" y1="214" x2="236" y2="205" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="190" y1="280" x2="236" y2="225" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <g font-size="13" fill="#0b0b0b">
+    <rect x="690" y="120" width="200" height="50" rx="8" fill="#ffffff" stroke="#2a78d6"/>
+    <text x="704" y="141" font-weight="700">LL-HLS</text>
+    <text x="704" y="159" font-size="11" fill="#52514e">av1.m3u8 · AV1 + AAC</text>
+    <rect x="690" y="180" width="200" height="50" rx="8" fill="#ffffff" stroke="#2a78d6"/>
+    <text x="704" y="201" font-weight="700">WebRTC</text>
+    <text x="704" y="219" font-size="11" fill="#52514e">av1 · AV1 + Opus</text>
+    <rect x="690" y="240" width="200" height="50" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+    <text x="704" y="261" font-weight="700">File recording</text>
+    <text x="704" y="279" font-size="11" fill="#52514e">MP4 · WebM</text>
+    <rect x="690" y="300" width="200" height="50" rx="8" fill="#ffffff" stroke="#c9c8c2"/>
+    <text x="704" y="321" font-weight="700">OVT</text>
+    <text x="704" y="339" font-size="11" fill="#52514e">relay to edge servers</text>
+  </g>
+  <line x1="640" y1="190" x2="686" y2="145" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="205" x2="686" y2="205" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="220" x2="686" y2="265" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="640" y1="235" x2="686" y2="325" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="890" y1="175" x2="926" y2="175" stroke="#898781" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="935" y="168" font-size="12" font-weight="700" fill="#0b0b0b">AV1</text>
+  <text x="935" y="184" font-size="12" font-weight="700" fill="#0b0b0b">viewers</text>
+  <rect x="30" y="372" width="940" height="34" rx="6" fill="#eef4fc"/>
+  <text x="500" y="394" text-anchor="middle" font-size="12" fill="#0b0b0b"><tspan font-weight="700">Key point:</tspan> keep your existing H.264 encoder — OME converts to AV1 and cuts delivery bitrate by about half.</text>
+</svg>

@@ -22,18 +22,42 @@ export default function BlogPostItemContent({
   // (Medium, Stripe, Linear, Vercel) follows. Posts without `image:`
   // stay text-only; no placeholder is drawn.
   const heroImage = assets.image ?? frontMatter.image;
+  // Optional credit line under the hero, e.g. for third-party logos:
+  // `image_credit: "AV1 logo: Alliance for Open Media"` and an optional
+  // `image_credit_url` that links the text to its source.
+  const {image_credit: heroCredit, image_credit_url: heroCreditUrl} =
+    frontMatter as {image_credit?: string; image_credit_url?: string};
   return (
     <div
       // This ID is used for the feed generation to locate the main content
       id={isBlogPostPage ? blogPostContainerID : undefined}
       className={clsx('markdown', className)}>
-      {isBlogPostPage && heroImage && (
+      {isBlogPostPage && heroImage && !heroCredit && (
         <img
           src={heroImage as string}
           alt=""
           className="blog-hero"
           loading="eager"
         />
+      )}
+      {isBlogPostPage && heroImage && heroCredit && (
+        <figure className="blog-hero-figure">
+          <img
+            src={heroImage as string}
+            alt=""
+            className="blog-hero"
+            loading="eager"
+          />
+          <figcaption>
+            {heroCreditUrl ? (
+              <a href={heroCreditUrl} target="_blank" rel="noopener noreferrer">
+                {heroCredit}
+              </a>
+            ) : (
+              heroCredit
+            )}
+          </figcaption>
+        </figure>
       )}
       {isBlogPostPage && cardAuthors.length > 0 && (
         <BlogAuthorCard authors={cardAuthors} />

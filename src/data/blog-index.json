@@ -14,6 +14,35 @@
     "image": "hero.jpg"
   },
   {
+    "slug": "shipping-av1-in-the-real-world",
+    "permalink": "/blog/shipping-av1-in-the-real-world",
+    "title": "Shipping AV1 in the Real World",
+    "description": "Not every device can play AV1 yet. OvenMediaEngine solves this by delivering AV1 and H.264 from a single stream, so each viewer gets the codec their device can actually play.",
+    "tags": [
+      "av1",
+      "ome",
+      "tutorial"
+    ],
+    "date": "2026-10-08",
+    "dir": "2026-10-08-shipping-av1-in-the-real-world",
+    "image": "hero.png"
+  },
+  {
+    "slug": "av1-live-streaming-with-ovenmediaengine",
+    "permalink": "/blog/av1-live-streaming-with-ovenmediaengine",
+    "title": "What Are the Benefits of AV1?",
+    "description": "What AV1 saves in picture quality and delivery traffic, why live AV1 needs a hardware encoder, and how to configure OvenMediaEngine to turn H.264 ingest into AV1 over LL-HLS and WebRTC.",
+    "tags": [
+      "av1",
+      "ome",
+      "fundamentals",
+      "tutorial"
+    ],
+    "date": "2026-10-07",
+    "dir": "2026-10-07-av1-live-streaming-with-ovenmediaengine",
+    "image": "hero.png"
+  },
+  {
     "slug": "your-live-stream-is-up-that-doesnt-mean-its-healthy",
     "permalink": "/blog/your-live-stream-is-up-that-doesnt-mean-its-healthy",
     "title": "Your Live Stream Is Up. That Doesn't Mean It's Healthy",
