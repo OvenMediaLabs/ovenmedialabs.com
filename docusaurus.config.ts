@@ -296,13 +296,13 @@ const config: Config = {
             '**/__tests__/**',
             'README.md',
           ],
-          blogTitle: 'OvenMedia Blog',
-          blogDescription: 'Sub-second latency live streaming insights from OvenMedia Labs.',
+          blogTitle: "OvenMedia Blog | OvenMediaEngine Team's Insights",
+          blogDescription: 'Written by the engineers behind OvenMediaEngine. Explore WebRTC, LL-HLS, SRT, real-world streaming architectures, tutorials, and product updates.',
           feedOptions: {
             type: ['rss', 'atom'],
             xslt: true,
             title: 'OvenMedia Blog',
-            description: 'Sub-second latency live streaming insights from OvenMedia Labs.',
+            description: 'Written by the engineers behind OvenMediaEngine. Explore WebRTC, LL-HLS, SRT, real-world streaming architectures, tutorials, and product updates.',
           },
           // editUrl intentionally omitted: editors and contributors don't
           // need a per-post "Edit this page" link on the live blog. The
