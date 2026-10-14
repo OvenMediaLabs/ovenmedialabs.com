@@ -19,7 +19,6 @@ To install OvenMediaEngine Enterprise, you need one of the following Linux versi
 * Ubuntu 24.04 LTS
 * Ubuntu 22.04 LTS
 * RHEL 9
-* RHEL 8
 
 ### Disk space
 

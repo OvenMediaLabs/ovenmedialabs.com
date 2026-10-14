@@ -43,7 +43,7 @@ It’s offering more and more enterprise-grade features tailored to your needs a
 ## Supported Operating Systems
 
 * Ubuntu 22+
-* RHEL 8+
+* RHEL 9+
 * Docker
 
 ## Contact
