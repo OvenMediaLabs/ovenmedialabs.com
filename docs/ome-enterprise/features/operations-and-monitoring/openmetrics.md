@@ -78,15 +78,17 @@ Metrics are grouped into collectors. Select a subset with repeated query keys (t
 
 Collector names are lowercase. An unknown name returns `400` with the list of valid names. A request with no selection emits all default collectors.
 
-| Collector    | Emits                                                                              | In default scrape |
-| ------------ | ---------------------------------------------------------------------------------- | ----------------- |
-| `core`       | Build info, process start time                                                     | Always on         |
-| `traffic`    | Received/transmitted byte counters                                                 | Yes               |
-| `connection` | Current connection gauges                                                          | Yes               |
-| `stream`     | Media/track characteristics, source timing, ingest RTT, and SRT ingest packet loss | Yes               |
-| `queue`      | Managed-queue gauges and counters                                                  | Yes               |
-| `push`       | Push/record byte counters and state                                                | Yes               |
-| `session`    | Per-session byte counter, throughput, RTT, and SRT egress packet loss              | No (opt-in)       |
+| Collector         | Emits                                                                              | In default scrape |
+| ----------------- | ---------------------------------------------------------------------------------- | ----------------- |
+| `core`            | Build info, process start time                                                     | Always on         |
+| `traffic`         | Received/transmitted byte counters                                                 | Yes               |
+| `connection`      | Current connection gauges                                                          | Yes               |
+| `stream`          | Media/track characteristics, source timing, ingest RTT, and SRT ingest packet loss | Yes               |
+| `queue`           | Managed-queue gauges and counters                                                  | Yes               |
+| `push`            | Push/record byte counters and state                                                | Yes               |
+| `session`         | Per-session byte counter, throughput, RTT, and SRT egress packet loss              | No (opt-in)       |
+| `frame_latency`   | Per-track frame latency histograms                                                 | Yes               |
+| `session_latency` | Per-session WebRTC egress latency (count and sum)                                  | No (opt-in)       |
 
 `core` is always emitted regardless of the selection.
 
@@ -97,6 +99,10 @@ Other publishers (Thumbnail, File, and so on) are reflected at the stream level 
 
 An OVT relay session reports RTT only when the OVT bind port is TCP, which is the default.
 If it is bound as SRT, `ome_session_rtt_seconds` is not emitted for that session (no method applies).
+
+`session_latency` is opt-in for the same reason as `session`, and covers WebRTC viewer sessions only.
+The `.../streams/{stream}/sessions` path includes it unless the request names it in `exclude[]`, so a request with `collect[]` on that path gets it too.
+To get the default collectors together with an opt-in one, list every collector in `collect[]`.
 
 ## Metrics reference
 
@@ -185,6 +191,128 @@ The `push` families carry their own `protocol` label for the protocol of that pu
 | `ome_session_srt_retransmitted_packets_total` | counter | SRT egress: packets retransmitted to the subscriber. SRT sessions only.                                               |
 | `ome_session_srt_dropped_packets_total`       | counter | SRT egress: packets dropped too-late-to-send (TLPKTDROP). SRT sessions only.                                          |
 
+### Frame latency
+
+When `Modules > FrameLatency` is enabled, OvenMediaEngine records when each frame passes four points and reports the time between them.
+
+| Point | Where                                                                                                                                                                                            |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `[1]` | The origin receives the frame from its input, whatever the ingest protocol.                                                                                                                      |
+| `[2]` | The origin writes the frame to the OVT connection of an edge.                                                                                                                                    |
+| `[3]` | The edge receives the first fragment of the frame. On a server that does not pull from an origin, this is when the frame arrives from its input.                                                 |
+| `[4]` | The server hands the last RTP packet of the frame to the send path of a WebRTC viewer. A frame the send path refuses, such as one before the viewer's DTLS handshake completes, is not measured. |
+
+| Span         | Points      | Notes                                                                                                                                              |
+| ------------ | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ingest`     | `[2] - [1]` | Time the frame spends in the origin before it is written to this edge's connection. Each edge has its own value, so do not add it up across edges. |
+| `relay`      | `[3] - [2]` | Subtracts the origin's clock from the edge's: any offset between the two clocks is in the value.                                                   |
+| `egress`     | `[4] - [3]` | Measured once per frame per WebRTC viewer. Does not include socket or kernel queueing, which can be significant over TCP or TURN.                  |
+| `end_to_end` | `[4] - [1]` | Subtracts two servers' clocks, like `relay`. Measured once per frame per WebRTC viewer.                                                            |
+
+Every span is measured on every frame.
+
+Where each span is reported:
+
+- An edge reports all four spans for the streams it pulls from an origin.
+- Any server with WebRTC viewers, the origin included, reports `egress` for them.
+- The origin reports no `ingest`, `relay`, or `end_to_end`.
+  It sends `[1]` and `[2]` to the edges with every frame, and the edges measure.
+- The spans are reported on the output stream tracks, with the same labels as the other `ome_track_*` series.
+- In a chain such as origin > edge > edge, an edge receives `[1]` and `[2]` from the server it pulls from.
+  On the last edge, `ingest` and `end_to_end` therefore start when the middle edge received the frame.
+
+`ingest`, `relay`, and `end_to_end` need all of the following:
+
+1. `Modules > FrameLatency` is enabled on the origin, so that it sends `[1]` and `[2]`, and on every edge, so that it records the spans.
+   With only the edge enabled, the edge reports only `egress`.
+   With only the origin enabled, the edge reports nothing.
+2. The edge is connected to the origin over OVT2.
+   An edge connected over OVT1 (for example, to an origin of an older version) receives no `[1]` and `[2]` and reports only `egress`.
+3. The clocks of the origin and the edges are synchronized, for example with NTP, because `relay` and `end_to_end` compare them.
+
+If a span has no series:
+
+- A span's series appear with its first measured frame.
+  `egress` and `end_to_end` need a WebRTC viewer, so an origin with no WebRTC viewers reports only `ome_frame_latency_buckets_info`.
+- Check the first two requirements above: the feature on both sides, and OVT2.
+- A track this server transcodes has no series at all, because the encoder produces a new frame that carries no arrival time.
+  A track the origin transcodes has `egress` on the edge, but no `ingest`, `relay`, or `end_to_end`.
+- Scheduled and multiplex streams report no frame latency.
+
+#### Configuration
+
+```xml
+<Server>
+    <Modules>
+        <FrameLatency>
+            <Enable>true</Enable>
+            <!-- Optional. Testing and diagnostics only -->
+            <Buckets>0.001,0.005,0.01,0.02,0.03,0.05,0.07,0.1,0.15,0.2,0.3,0.5,1,3</Buckets>
+        </FrameLatency>
+    </Modules>
+</Server>
+```
+
+- `<Enable>` (default `false`): turns the measurement on for the whole server.
+  It is read at startup, so a change takes effect after a restart.
+- `<Buckets>` (optional, for testing and diagnostics): histogram upper bounds in seconds, comma-separated and strictly increasing.
+  Each bound is between `0.0001` and `3600` with at most 6 decimal places, and the list holds at most 30 bounds.
+  The default is the list above.
+  An invalid list is a configuration error, and the server does not start.
+
+To stop an origin from sending `[1]` and `[2]` for one application, set `<OVT><FrameLatency><Enable>false</Enable></FrameLatency></OVT>` under that application's `<Publishers>`.
+It defaults to `true`, so there is nothing to set otherwise.
+
+If you change `<Buckets>`:
+
+- Use the same list on every server whose histograms you sum together.
+  `ome_frame_latency_buckets_info` shows each server's list in its `bounds` label.
+  This query finds servers that disagree, where `job` stands for the label your monitoring system attaches to group servers: `count by (job) (count by (job, bounds) (ome_frame_latency_buckets_info)) > 1`.
+- Query ranges that cover the restart mix the old and the new buckets, so quantiles over those ranges are wrong.
+- A query or alert that names a specific `le`, such as the 200 ms and 500 ms examples in [Example queries](#example-queries), returns nothing once that bound is removed.
+  The server logs a warning at startup whenever `<Buckets>` differs from the default, and names `0.2` or `0.5` when the list lacks them.
+
+#### Reading the histograms
+
+- The frame count (`_count`), the summed latency (`_sum`), and the mean (`rate(..._sum[5m]) / rate(..._count[5m])`) are exact.
+- The share of frames above a bound is exact when the bound is one of the buckets.
+- `le` values are written in their shortest decimal form, with `.0` for whole seconds: `le="0.2"`, `le="1.0"`.
+- A quantile, such as the 95th percentile, is interpolated within the bucket it falls in, so its error is up to the width of that bucket.
+  A quantile above the highest bound (3 seconds by default) cannot be resolved; read it as "at least that much".
+- The histograms keep a count per bucket, not individual values.
+  For the largest value in a period and when it happened, use the `FrameLatency` log below.
+- `_count` plus the `..._excluded_observations_total` series is every observation of the span.
+  An observation is left out of the histogram for one of two reasons:
+  - `reason="negative"`: the span came out negative, which happens when the servers' clocks disagree or a clock is stepped back.
+    If it keeps rising, synchronize the clocks; `relay` and `end_to_end` are not reliable until then.
+  - `reason="unmeasured"`: the track had received the origin's times before, but this frame arrived without them.
+
+For the exact value and time of an outlier, enable the `FrameLatency` log tag at `debug` level in `Logger.xml`.
+It writes one line per track per second with the frame count and the largest value of each span in that second (in microseconds), the id of the session that saw the largest `egress` and `end_to_end`, and each span's histogram `_count`.
+Spans the track has never measured are left out of its line.
+The `_count` places the line between two scrapes without relying on clocks.
+
+### `frame_latency`
+
+Empty unless `Modules > FrameLatency` is enabled. See [Frame latency](#frame-latency) for the points and spans.
+
+| Metric                                                 | Type      | Description                                                                                                                                            |
+| ------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ome_track_ingest_latency_seconds`                     | histogram | `ingest`: the origin receiving the frame to writing it to this edge. One observation per frame.                                                        |
+| `ome_track_relay_latency_seconds`                      | histogram | `relay`: the origin writing the frame to this edge receiving its first fragment. One observation per frame.                                            |
+| `ome_track_egress_latency_seconds`                     | histogram | `egress`: this server receiving the frame to handing its last RTP packet to the send path of a WebRTC viewer. One observation per frame per viewer.    |
+| `ome_track_end_to_end_latency_seconds`                 | histogram | `end_to_end`: the origin receiving the frame to handing its last RTP packet to the send path of a WebRTC viewer. One observation per frame per viewer. |
+| `ome_track_<span>_latency_excluded_observations_total` | counter   | Observations of a span left out of its histogram, by `reason`: `negative` or `unmeasured` (`egress` has only `negative`).                              |
+| `ome_frame_latency_buckets_info`                       | info      | The histogram bounds this server uses, in the `bounds` label. Emitted only while at least one stream is in scope.                                      |
+
+### `session_latency` (opt-in)
+
+Empty unless `Modules > FrameLatency` is enabled. Covers WebRTC viewer sessions only.
+
+| Metric                               | Type    | Description                                                                                                                                                     |
+| ------------------------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ome_session_egress_latency_seconds` | summary | This WebRTC viewer's own `egress` span, per track, as `_count` and `_sum` (no quantiles). Negative spans are left out. Up to 32 tracks per session are counted. |
+
 ### Round-trip time
 
 Two RTT gauges are exposed in seconds, each carrying a `method` label that says how the value was measured:
@@ -258,6 +386,18 @@ ome_session_rtt_seconds{app="my_app"}
 # Transport-vs-media RTT divergence for WebRTC sessions
 # (large positive = TCP transport is slower than the media-path RTT)
 ome_session_rtt_seconds{method="tcp"} - ignoring(method) ome_session_rtt_seconds{method="rtcp"}
+
+# Frame latency. Keep each range ([5m], [2m]) at least four times your scrape interval,
+# or rate() and increase() can return nothing.
+
+# Frame latency: 95th percentile over 5 minutes, by media
+histogram_quantile(0.95, sum by (le, media) (rate(ome_track_end_to_end_latency_seconds_bucket[5m])))
+
+# Frame latency: share of frames above 200 ms
+1 - rate(ome_track_end_to_end_latency_seconds_bucket{le="0.2"}[5m]) / ignoring(le) rate(ome_track_end_to_end_latency_seconds_count[5m])
+
+# Frame latency alert: more than 10 frames above 500 ms in 2 minutes
+increase(ome_track_end_to_end_latency_seconds_count[2m]) - ignoring(le) increase(ome_track_end_to_end_latency_seconds_bucket{le="0.5"}[2m]) > 10
 ```
 
 Stream-level series (`ome_connections`, `ome_receive_bytes_total`, `ome_transmit_bytes_total`, `ome_stream_rtt_seconds`) are emitted both for the input stream and for each output rendition. Match `output_stream=""` to select the input-side aggregate once and avoid double-counting across renditions.
