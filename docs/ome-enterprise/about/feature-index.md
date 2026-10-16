@@ -201,6 +201,7 @@ listed here have no version-gated options beyond their minimum version above.
 - **0.17.2.2**: Thread-count setting for the software decoder; keyframe-only decoding when no video encoding
 - **0.17.3.0**: Lookahead encoding option
 - **0.21.0.0**: AV1 codec support (libaom software encoder/decoder)
+- **0.21.2.0**: `ScaleMode` option (`fit` / `crop` / `stretch`)
 
 ### ABR
 
@@ -215,6 +216,7 @@ listed here have no version-gated options beyond their minimum version above.
 - **0.16.6.1**: Thumbnail Publisher supports HTTP/1.0
 - **0.17.3.1**: WebP image codec
 - **0.21.0.0**: AVIF image codec
+- **0.21.2.0**: `ScaleMode` option (`fit` / `crop` / `stretch`)
 
 ### TranscodeWebhook
 
