@@ -15,6 +15,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const FIELD_ERROR: Record<string, string> = {
   name:      'Please enter your name.',
   email:     'Please enter a valid work email.',
+  company:   'Please enter your company or organization.',
   message:   'Please tell us about your inquiry.',
   interests: 'Please select at least one area of interest.',
 };
@@ -53,10 +54,11 @@ export default function EnterpriseConsultForm(): React.ReactElement {
     if (errors.interests) setErrors((p) => ({...p, interests: ''}));
   };
 
-  function validate(p: {name: string; email: string}, sel: string[]) {
+  function validate(p: {name: string; email: string; company: string}, sel: string[]) {
     const e: Record<string, string> = {};
     if (!p.name.trim()) e.name = FIELD_ERROR.name;
     if (!p.email.trim() || !EMAIL_RE.test(p.email.trim())) e.email = FIELD_ERROR.email;
+    if (!p.company.trim()) e.company = FIELD_ERROR.company;
     if (!sel.length) e.interests = FIELD_ERROR.interests;
     return e;
   }
@@ -115,9 +117,9 @@ export default function EnterpriseConsultForm(): React.ReactElement {
     return (
       <div className="consult-form consult-done text-center">
         <i className="ph ph-check-circle consult-done-icon" />
-        <h3 className="text-main fw-bold mb-2">Thank You for Contacting Us!</h3>
+        <h3 className="text-main fw-bold mb-2">Thank You for Your Interest in OvenMediaEngine Enterprise!</h3>
         <p className="text-sub mb-4">
-          We've received your inquiry.<br/>The OvenMediaEngine Enterprise team will contact you as soon as possible.
+          Thank you for reaching out!<br/>Our OvenMediaEngine Enterprise team will review your submission and respond within 3-5 business days if your contact information and request details are complete and accurate.
         </p>
         <a href="/#enterprise" className="btn btn-enterprise-outline rounded-pill px-4">
           <i className="ph ph-arrow-left me-2" />Back to OvenMediaEngine Enterprise
@@ -153,10 +155,13 @@ export default function EnterpriseConsultForm(): React.ReactElement {
         </div>
         <div className="col-md-6">
           <label className="consult-label" htmlFor="ecf-company">
-            Company or Organization
+            Company or Organization <span className="consult-req">*</span>
           </label>
-          <input className="consult-input" id="ecf-company" name="company" type="text"
-            placeholder="Company or organization name" maxLength={300} />
+          <input className={`consult-input${errors.company ? ' is-invalid' : ''}`} id="ecf-company" name="company" type="text"
+            placeholder="Company or organization name" maxLength={300}
+            aria-invalid={!!errors.company}
+            onInput={() => errors.company && setErrors((p) => ({...p, company: ''}))} />
+          {errors.company && <span className="consult-field-error">{errors.company}</span>}
         </div>
         <div className="col-md-6">
           <label className="consult-label" htmlFor="ecf-country">
