@@ -28,7 +28,7 @@ An explicit setting always wins, so you can configure either option on its own.
 
 :::warning
 
-Keep `SegmentationMode` set to `synced` whenever the stream carries ad breaks. In `duration` segmentation each track decides its own boundaries, so the same marker can land on a different segment on each of them.
+Keep `SegmentationMode` set to `synced` whenever the stream carries ad breaks. In `duration` segmentation each track decides its own boundaries, so the same marker can land on a different segment on each of them. Synced segmentation also has requirements on the video renditions of the output profile, such as the same keyframe interval and the same B-frame settings; see the Segmentation Mode section of [Ad Markers](ad-markers.md).
 
 :::
 

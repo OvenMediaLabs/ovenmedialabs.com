@@ -385,9 +385,9 @@ A scheduled marker holds the break sequence until it is reached. Between the req
 
 ## Segmentation Mode
 
-Every track has to mark the break at the same place. In `duration` segmentation each track decides its own boundaries, so the same marker can land on a different segment on each of them.
+Use synced segmentation when every rendition must cut its segments at the same positions: the same segment number then covers the same range on every rendition, and a marker lands on the same segment everywhere. In `duration` segmentation each track decides its own boundaries, so the same marker can land on a different segment on each of them.
 
-Set `<SegmentationMode>` to `synced` on the streams that carry ad breaks:
+Set `<SegmentationMode>` to `synced` on such streams:
 
 ```xml
 <Publishers>
@@ -397,6 +397,28 @@ Set `<SegmentationMode>` to `synced` on the streams that carry ad breaks:
   </LLHLS>
 </Publishers>
 ```
+
+### Requirements for synced segmentation
+
+Synced segmentation keeps the renditions together only when every video rendition of the output profile can cut at the same positions. Configure the video renditions as follows. Audio renditions have no requirement.
+
+- **Keyframe interval**: the same length of time on every video rendition. `KeyFrameInterval` counts frames, so scale it with the frame rate: 60 frames at 30 fps and 120 frames at 60 fps are both 2 seconds. Keep `SegmentDuration` a multiple of that length.
+- **Frame rate**: the same on every video rendition, or one an integer multiple of the other, such as 30 fps and 60 fps. 29.97 fps and 30 fps do not go together.
+- **B-frames**: the same `BFrames` value and the same encoder module on every video rendition. When the frame rates differ, set `BFrames` to 0 on every rendition.
+- **Bypass video next to transcoded video**: the transcoded renditions must match the source encoder in frame rate, keyframe interval and B-frame configuration. If you cannot tell how the source was encoded, use a source without B-frames and `BFrames` 0 on every transcoded rendition, use bypass video alone, or transcode every video rendition.
+
+| Output profile | Synced segmentation |
+|---|---|
+| 1080p and 720p, both 30 fps, `KeyFrameInterval` 60, `BFrames` 3, same encoder module | Supported |
+| 1080p 60 fps `KeyFrameInterval` 120 and 720p 30 fps `KeyFrameInterval` 60, `BFrames` 0 on both | Supported |
+| 1080p 60 fps and 720p 30 fps with `BFrames` 3 on both | Not supported |
+| 30 fps renditions with `KeyFrameInterval` 60 and 90 | Not supported |
+| Bypass video of a source without B-frames, transcoded renditions with `BFrames` 0 and the same keyframe interval | Supported |
+| Bypass video of a source with B-frames next to transcoded renditions | Not supported unless the renditions match the source encoder |
+| Bypass video of a 29.97 fps source with a 30 fps transcoded rendition | Not supported |
+| One bypass video and bypass audio only | Supported |
+
+A rendition outside these requirements keeps playing, but its segments are no longer guaranteed to end where the other renditions' do or to keep the same segment numbers, so a marker can land on a different segment on that rendition. The first such segment logs `The boundary at ... is not a keyframe on this track; the segment closes at the keyframe at ... instead` once for the rendition. Treat that line as a configuration problem of the output profile. With bypass video next to transcoded video, or with mixed frame rates, the line can appear once even on a supported profile; the renditions then still start every segment on the same picture.
 
 ## Keyframe on Cue
 
