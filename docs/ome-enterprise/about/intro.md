@@ -9,7 +9,7 @@ sidebar_position: 1
 
 ## What is OvenMediaEngine Enterprise?
 
-[**OvenMediaEngine Enterprise**](https://ovenmedia.com/#enterprise) is a Sub-Second Latency Streaming Server for Enterprises, developed based on [OvenMediaEngine](https://github.com/AirenSoft/OvenMediaEngine), the open-source streaming server using WebRTC, Low Latency HLS (LL-HLS), and SRT.
+[**OvenMediaEngine Enterprise**](https://ovenmedia.com/#enterprise) is a Sub-Second Latency Streaming Server for Enterprises, developed based on [OvenMediaEngine](https://github.com/OvenMediaLabs/OvenMediaEngine), the open-source streaming server using WebRTC, Low Latency HLS (LL-HLS), and SRT.
 
 It’s offering more and more enterprise-grade features tailored to your needs and objectives.
 

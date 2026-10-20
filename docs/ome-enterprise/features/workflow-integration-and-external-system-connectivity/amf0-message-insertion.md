@@ -76,7 +76,7 @@ Credentials for HTTP Basic Authentication created with <AccessToken>
     "events":[
       {
         "frameType": "TXXX",
-        "info": "AirenSoft",
+        "info": "OvenMedia Labs",
         "data": "OvenMediaEngine"
       },
       {
