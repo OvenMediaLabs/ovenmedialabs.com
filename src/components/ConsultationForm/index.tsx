@@ -125,9 +125,9 @@ export default function ConsultationForm(): React.ReactElement {
     return (
       <div className="consult-form consult-done text-center">
         <i className="ph ph-check-circle consult-done-icon" />
-        <h3 className="text-main fw-bold mb-2">Thank you! Your request is in.</h3>
+        <h3 className="text-main fw-bold mb-2">Thank You for Your Interest in OvenMedia Cloud!</h3>
         <p className="text-sub mb-4">
-          We have received your request.<br/>The OvenMedia Cloud team will review the information and contact you shortly.
+          Thank you for reaching out!<br/>Our OvenMedia Cloud team will review your submission and respond within 3-5 business days if your contact information and request details are complete and accurate.
         </p>
         <a href="/om-cloud" className="btn btn-company-outline rounded-pill px-4">
           <i className="ph ph-arrow-left me-2" />Back to OvenMedia Cloud
