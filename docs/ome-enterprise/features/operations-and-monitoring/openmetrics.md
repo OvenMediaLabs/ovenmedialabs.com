@@ -288,9 +288,36 @@ If you change `<Buckets>`:
   - `reason="unmeasured"`: the track had received the origin's times before, but this frame arrived without them.
 
 For the exact value and time of an outlier, enable the `FrameLatency` log tag at `debug` level in `Logger.xml`.
-It writes one line per track per second with the frame count and the largest value of each span in that second (in microseconds), the id of the session that saw the largest `egress` and `end_to_end`, and each span's histogram `_count`.
-Spans the track has never measured are left out of its line.
-The `_count` places the line between two scrapes without relying on clocks.
+It writes one line per track per second, starting with the second it covers as `sec=<Unix seconds>` and the time since the previous line as `w=<milliseconds>`, and then these fields for each span the track has measured:
+
+| Field        | Meaning                                                                                                                                          |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `n`          | Frames measured in that second                                                                                                                   |
+| `max`        | The largest value in that second, in microseconds, with the `pts` of that frame and, for `egress` and `end_to_end`, the `session` id that saw it |
+| `count`      | The span's histogram `_count` when the line was written                                                                                          |
+| `d`          | What `_count` added since the previous line                                                                                                      |
+| `mean`       | The mean of the values added since the previous line, in microseconds                                                                            |
+| `neg`, `unm` | Observations left out since the previous line, as `reason="negative"` and `reason="unmeasured"` (only when not zero)                             |
+| `b`          | The buckets filled since the previous line, as `<upper bound in seconds>:<frames>` (only the ones that are not zero)                             |
+
+```text
+#default#app/stream track 0 (Video) sec=1792479271 w=1001ms: ... end_to_end n=30 max=133764us(session 100, pts 30421) count=617 d=31 mean=68066us b=0.02:1,0.03:2,0.05:2,0.07:19,0.1:4,0.15:3
+```
+
+`d`, `mean`, `neg`, `unm`, and `b` come from the same counters a scrape reads.
+A span's first line covers everything since the span started, so the `d` of all its lines add up to its `_count`, and the lines between two scrapes add up to the increase the scrapes show, within one line at either end.
+The very first line after the server starts writing these lines has no `w`.
+To find the lines behind an increase, take `_count` from the two scrapes and pick the lines of the same track whose `count` falls between them; no clock is involved.
+Use `count` rather than `sec` to place a line: after the wall clock is stepped back, the same `sec` can appear twice.
+`w` is measured on a clock that wall-clock adjustments do not move, and it shows how long the increments of a line cover.
+It is about one second, but a line is written up to half a second after its second ends, so `d` can differ from `n` by up to about half a second of frames, and `max` can fall outside the frames `b` counts.
+While the log tag is off nothing is written, and the first line after it is turned back on covers the whole time it was off, as its `w` shows.
+
+The `pts` is the one the origin gave the frame, on the origin and on an edge that pulls from it and passes the track through without transcoding, so both name the frame alike.
+On a track an edge transcodes, or on an edge further down a chain of edges, it is not the origin's pts and does not match the origin's log.
+A `pts` written as `pts ~<pts>` is approximate: it is usually the largest frame's own pts, and otherwise that of a frame that raised the maximum at about the same moment.
+`pts n/a` means no pts was found for the maximum: its frame had none, or none could be read for it.
+In the rare second whose frames left no maximum that could be read, `max` is written as `max=n/a`.
 
 ### `frame_latency`
 
