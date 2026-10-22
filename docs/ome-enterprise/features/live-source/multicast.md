@@ -134,6 +134,15 @@ For more information, see the [REST API](../rest-api/README.md) documentation.
 
 ## Notes
 
-* If a new sender starts on the same group and port, the provider detects it and attempts a reconnect.
-* During reconnect, the new input track layout is compared against the previously published layout.
+* If a new sender starts on the same group and port, the provider detects it from a timestamp rollback of 1 second or more, a forward timestamp jump of more than 5 seconds that lands on no other track's timeline, or a PAT/PMT change of the PMT PID or the track PIDs and stream types, and continues the same stream with the new sender.
+  Output timestamps continue from the last output without a gap, and media of the new sender that would overlap output already sent is dropped.
+  SCTE-35 splice times move with the media.
+  If the old video had stopped, or the new sender's video does not arrive within a second, video resumes at the new sender's next keyframe, waiting at most 3 seconds.
+  Otherwise the video track the timeline continues from resumes at once, and any other video track resumes at its next keyframe.
+  A new sender that joins mid-GOP (for example, a backup encoder that is already running) can therefore show a corrupted picture until its next keyframe.
+* If the new sender uses different PIDs, its tracks are mapped onto the published tracks by media type and codec.
+* The stream stops and reconnects as described in [Pull timeout and retry](#pull-timeout-and-retry), or is deleted if `RetryCount` is `0` (the default), when:
+  * the tracks cannot be mapped (a different track count or kind, or several tracks with the same media type and codec under new PIDs), which also fails a reconnect to that sender;
+  * the new sender's PAT/PMT does not describe its tracks within `ProbeTimeoutMsec`;
+  * the stream is not persistent and the input gap plus the switch, which holds media for up to a few seconds, exceeds `NoInputFailoverTimeout`.
 * The input metadata must be available within `ProbeTimeoutMsec` for the stream to be published.
