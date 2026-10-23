@@ -147,6 +147,7 @@ listed here have no version-gated options beyond their minimum version above.
 - **0.20.5.1**: Immediate WHIP playback without waiting for RTCP (option); Transport-cc bandwidth estimation; `max_fps` in `OvenCapabilities`
 - **0.20.5.2**: `<ForceOvenCapabilitiesMaxValuesInStreamInfo>` option
 - **0.20.8.0**: NACK + RTX packet loss recovery for video (`<Rtx>` with `Enable` / `MaxHoldMs`)
+- **0.21.2.0**: `<StartBitrateHint>` setting (default 1000 kbps, `0` disables) advertises `x-google-start-bitrate` in the WHIP answer so publishers start at a higher bitrate and reach full quality faster
 
 ### RTSP Pull
 
@@ -275,6 +276,7 @@ listed here have no version-gated options beyond their minimum version above.
 - **0.20.8.0**: `TrackPrepareTimeout` anomaly rule
 - **0.21.0.0**: Alert notification payloads include a `serverInfo` block (server ID, name, hostname, IP addresses) to identify the source server in multi-instance deployments
 - **0.21.1.0**: Ingress stream alerts include a `connection` object reporting active transport, protocol, and local/remote addresses for WebRTC, RTMP, SRT, and MPEG-TS ingest streams
+- **0.21.2.0**: Send alert notifications to multiple webhook destinations via `<Alert><Webhooks><Webhook>` (per-webhook `Url`, `SecretKey`, `Timeout`, `HashAlgorithm`); the single-URL settings directly under `<Alert>` are deprecated
 
 ### CDN Cache Control
 
@@ -318,6 +320,7 @@ listed here have no version-gated options beyond their minimum version above.
 - **0.18.2.1**: `/v2/stats/*` statistics APIs
 - **0.20.0.0**: Supported-codecs query API (`/v2` internals)
 - **0.21.1.0**: Stream response (`input`) includes a `connection` object with transport, protocol, and address details for each ingest stream
+- **0.21.2.0**: Stream information reports each video track's codec `profile`, `level`, `tier`, `bitDepth`, and RFC 6381 `codecs` string (also included in TranscodeWebhook requests and Alert payloads)
 
 ### Image Overlay
 
@@ -330,3 +333,7 @@ listed here have no version-gated options beyond their minimum version above.
 ### Send Event API
 
 - **0.21.1.0**: `startOffset` parameter on the `sendEvent` API schedules an event a fixed number of milliseconds ahead of the current stream position (max 300 000 ms); a request to a stream with no media yet answers 409
+
+### Clustering
+
+- **0.21.2.0**: OVT 2.0 protocol for Origin-Edge relay, which lets Origin and Edge servers be upgraded independently; existing Edges keep working with no configuration changes
