@@ -114,6 +114,17 @@ If you use the default configuration, you can start streaming with the following
 
 We have prepared a test player that you can quickly see if OvenMediaEngine is working. Please refer to the [Test Player](../quick-start/test-player.md) for more information.
 
+### Playback Sessions
+
+An LLHLS player sends many HTTP requests, often over several connections at once. OvenMediaEngine groups them into one playback session per player: the master playlist response carries a `session` value in every chunklist and segment URL below it, and every request that carries that value belongs to the same session. A session is counted as one viewer in the statistics and in the REST API.
+
+A session ends when every connection from the player has been closed for about 3 seconds. A short network glitch inside that time keeps the session as it is. Pausing alone usually does not end a session, because most players keep their connections and go on loading while paused.
+
+What happens after a session ends depends on whether access control is enabled for the application:
+
+* With [SignedPolicy](../access-control/signedpolicy.md) or [AdmissionWebhooks](../access-control/admission-webhooks.md), the player must request the master playlist again to play. Chunklist and segment requests that still carry the ended session are rejected with `401 Unauthorized`. Most players do not go back to the master playlist on their own, so a player whose connections were all closed for longer than that, for example after a network outage, stays stopped until your player page loads the stream again. Starting again goes through access control as a new request.
+* Without access control, the chunklist and segment URLs the player already has start a new session, so playback continues after a break of any length while the stream exists.
+
 ## Live Rewind
 
 You can create as long a playlist as you want by setting `<DVR>` to the LLHLS publisher as shown below. This allows the player to rewind the live stream and play older segments. OvenMediaEngine stores and uses old segments in a file in `<DVR>/<TempStoragePath>` to prevent excessive memory usage. It stores as much as `<DVR>/<MaxDuration>` and the unit is seconds.

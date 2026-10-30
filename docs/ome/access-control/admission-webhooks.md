@@ -121,6 +121,12 @@ As shown below, the trigger condition of request is different for each protocol.
 | SRT      | When a client send a [streamid](../live-source/srt.md#encoders-and-streamid) |
 | LLHLS    | When a client requests a playlist (llhls.m3u8)                                                                           |
 
+#### LLHLS
+
+An LLHLS player sends many HTTP requests over several connections, and OvenMediaEngine groups them into one [playback session](../streaming/low-latency-hls.md#playback-sessions) per player. The control server receives one `opening` request when the player requests the master playlist, and one `closing` request when the session ends, which is when every connection from the player has been closed for about 3 seconds. A short network glitch inside that time sends nothing. Pausing alone usually does not end a session, because most players keep their connections and go on loading while paused.
+
+Once the session has ended, requests for its chunklists and segments are rejected and the player has to request the master playlist again, which the control server receives as a new `opening` request. A player whose connections were all closed for longer than that, for example after a network outage, therefore produces a `closing` request, and another `opening` request when your player page loads the stream again.
+
 ## Response for closing status
 
 The engine in the closing state does not need any parameter in response. To the query just answer with empty json object.
@@ -157,7 +163,7 @@ Connection: Closed
 | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | allowed **(required)** | <p>true or false</p><p>Allows or rejects the client's request.</p>                                                                                                                                                                        |
 | new\_url (optional)    | Redirects the client to a new url. However, the `scheme`, `port`, and `file` cannot be different from the request. Only host, app, and stream can be changed. The host can only be changed to another virtual host on the same server.    |
-| lifetime (optional)    | <p>The amount of time (in milliseconds) that a client can maintain a connection (Publishing or Playback)</p><ul><li>0 means infinity</li></ul><p>HTTP based streaming (HLS) does not keep a connection, so this value does not apply.</p> |
+| lifetime (optional)    | <p>The amount of time (in milliseconds) that a client can maintain a connection (Publishing or Playback)</p><ul><li>0 means infinity</li></ul><p>For LLHLS, playback requests are rejected once this time has passed.</p> |
 | reason (optional)      | If allowed is false, it will be output to the log.                                                                                                                                                                                        |
 
 ### User authentication and control
