@@ -1,5 +1,18 @@
 [
   {
+    "slug": "how-much-can-one-ovenmediaengine-server-handle",
+    "permalink": "/blog/how-much-can-one-ovenmediaengine-server-handle",
+    "title": "OvenMediaEngine Performance Benchmark: Single-Server Capacity",
+    "description": "Measured capacity of a single OvenMediaEngine server: concurrent ingest streams, viewers, and H.264 transcoding channels on AWS EC2 and bare-metal hardware, across RTMP, SRT, WebRTC, and LL-HLS.",
+    "tags": [
+      "ome",
+      "benchmark"
+    ],
+    "date": "2026-11-03",
+    "dir": "2026-11-03-how-much-can-one-ovenmediaengine-server-handle",
+    "image": "hero.png"
+  },
+  {
     "slug": "looking-back-at-ibc2026",
     "permalink": "/blog/looking-back-at-ibc2026",
     "title": "Beyond the Stream: Looking Back at IBC 2026",

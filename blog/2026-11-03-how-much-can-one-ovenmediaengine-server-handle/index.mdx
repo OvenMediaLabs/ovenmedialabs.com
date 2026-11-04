@@ -1,0 +1,122 @@
+---
+slug: how-much-can-one-ovenmediaengine-server-handle
+title: "OvenMediaEngine Performance Benchmark: Single-Server Capacity"
+description: "Measured capacity of a single OvenMediaEngine server: concurrent ingest streams, viewers, and H.264 transcoding channels on AWS EC2 and bare-metal hardware, across RTMP, SRT, WebRTC, and LL-HLS."
+authors: [keukhan]
+tags: [ome, benchmark]
+image: ./hero.png
+keywords: [OvenMediaEngine, OvenMediaEngine performance, OvenMediaEngine benchmark, server capacity, concurrent viewers, WebRTC, LL-HLS, RTMP, SRT, x264 transcoding, AWS EC2, bare metal]
+---
+
+This is a performance report for OvenMediaEngine (OME), measured on real servers.
+
+A few questions come up from almost everyone evaluating OME:
+
+> "How many live streams can one server ingest?"<br />
+> "How many viewers can it serve?"<br />
+> "How many transcoding channels can it run?"
+
+Until now, the honest answer has been "it depends on your hardware and configuration." That is true, but it doesn't help much when you are trying to decide how many servers to provision. To provide concrete numbers, streams and viewers were added to a single OME server until it reached its limit, and the load that one machine could actually handle was recorded.
+
+The tests were run on **bare-metal servers** and on **AWS EC2 instances**, a widely used cloud platform. Testing is ongoing, and new results will be added to this post as they become available.
+
+{/* truncate */}
+
+## Test Scope
+
+- **Ingest**: how many streams one server can receive at the same time (RTMP, SRT, WebRTC/WHIP)
+- **Playback**: how many viewers can watch a single stream at the same time (WebRTC, LL-HLS)
+- **Transcoding**: how many 1080p streams one server can transcode at the same time. Three renditions that are common in real services were used: **480p (500 Kbps)**, **720p (2.5 Mbps)**, and **1080p (5 Mbps)**.
+
+## Test Methodology
+
+The number of streams or viewers was increased gradually to find the highest load just before quality broke down. That load was then held for two minutes and recorded as the result only if no issues occurred.
+
+The pass/fail criterion is the actual viewing quality, not CPU usage:
+
+- **Ingest and playback** fail when more than **1%** of streams or viewers stall or fail to play.
+- **Transcoding** fails when encoding can no longer keep up with real time.
+
+Every number below is therefore the **maximum load at which quality holds**. In production, plan for about **70–80%** of these values to leave headroom for traffic spikes.
+
+All machines ran the same OME version (**v0.21.2**), the same configuration, and the same test streams. Ingest and playback were measured without transcoding (bypass). Transcoding was measured by converting a 1080p 5 Mbps stream on the CPU with x264.
+
+## Test Environment
+
+### Servers
+
+| Type | Machine | CPU | Memory | Network |
+| --- | --- | --- | --- | --- |
+| Cloud<br />(AWS EC2) | c5.2xlarge | 8 vCPU (Xeon Platinum 8275CL, 4 physical cores)<br />3.0 GHz (up to 3.9 GHz) | 16 GB | Up to<br />10 Gbps |
+| Cloud<br />(AWS EC2) | c5.4xlarge | 16 vCPU (Xeon Platinum 8124M, 8 physical cores)<br />3.0 GHz (up to 3.5 GHz) | 32 GB | Up to<br />10 Gbps |
+| Bare metal<sup>*</sup> | Dell PowerEdge<br />R350 | Intel Xeon E-2388G, 8 cores / 16 threads<br />3.2 GHz (up to 5.1 GHz) | 64 GB | 10 Gbps |
+| Bare metal<sup>*</sup> | Supermicro<br />AS -3015MR-H8TNR | AMD EPYC 4564P, 16 cores / 32 threads<br />4.5 GHz (up to 5.7 GHz) | 96 GB | 10 Gbps × 2 |
+
+<small>\* Bare-metal servers (Dell PowerEdge R350 and Supermicro AS -3015MR-H8TNR) were provided by [servers.com](https://www.servers.com). Thank you for your support.</small>
+
+### Input Streams
+
+| Rendition<sup>*</sup> | Resolution | Video codec | Frame rate | Video bitrate |
+| --- | --- | --- | ---: | ---: |
+| 480p | 854 × 480 | H.264 | 30 fps | 500 Kbps |
+| 720p | 1280 × 720 | H.264 | 30 fps | 2.5 Mbps |
+| 1080p | 1920 × 1080 | H.264 | 30 fps | 5 Mbps |
+
+<small>\* The same streams were used for ingest and playback tests. Transcoding tests used the 1080p stream as input.</small>
+
+## Test Results
+
+### Ingest Capacity: Concurrent Input Streams
+
+| Protocol | Quality | c5.2xlarge<br />(cloud) | c5.4xlarge<br />(cloud) | Dell R350<br />(bare metal) | Supermicro<br />(bare metal) |
+| --- | --- | ---: | ---: | ---: | ---: |
+| RTMP | 480p | 90 | 170 | 300 | 550 |
+| RTMP | 720p | 60 | 120 | 230 | 380 |
+| RTMP | 1080p | 55 | 100 | 200 | 230 |
+| SRT | 480p | 75+ | 75+ | 75+ | 75+ |
+| SRT | 720p | 55+ | 75+ | 75+ | 75+ |
+| SRT | 1080p | 45+ | 75+ | 75+ | 75+ |
+| WebRTC (UDP) | 480p | 130 | 220 | 380 | 530 |
+| WebRTC (UDP) | 720p | 90 | 130 | 190 | 300 |
+| WebRTC (UDP) | 1080p | 65 | 95 | 130 | 200 |
+| WebRTC (TCP) | 480p | 140 | 230 | 550 | 700 |
+| WebRTC (TCP) | 720p | 95 | 150 | 240 | 300 |
+| WebRTC (TCP) | 1080p | 70 | 110 | 160 | 190 |
+
+:::note[About the SRT numbers]
+For SRT, the load-generation tool reached its own SRT sending limit before OME did, so OME's true maximum could not be measured. The values above are lower bounds: OME handled at least this many SRT streams. Updated numbers will be published once the test tool has been improved.
+:::
+
+### Playback Capacity: Concurrent Viewers
+
+| Protocol | Quality | c5.2xlarge<br />(cloud) | c5.4xlarge<br />(cloud) | Dell R350<br />(bare metal) | Supermicro<br />(bare metal) |
+| --- | --- | ---: | ---: | ---: | ---: |
+| WebRTC | 480p | 1,900 | 3,100 | 3,800 | 5,700 |
+| WebRTC | 720p | 740 | 1,400 | 1,600 | 2,500 |
+| WebRTC | 1080p | 450 | 720 | 900 | 1,500 |
+| LL-HLS | 480p | 3,400 | 6,200 | 6,700 | 10,000 |
+| LL-HLS | 720p | 2,700 | 3,300 | 3,400 | 5,100 |
+| LL-HLS | 1080p | 1,700 | 1,700 | 1,500 | 2,500 |
+
+### Transcoding Capacity: Concurrent Channels (x264)
+
+| Output | c5.2xlarge<br />(cloud) | c5.4xlarge<br />(cloud) | Dell R350<br />(bare metal) | Supermicro<br />(bare metal) |
+| --- | ---: | ---: | ---: | ---: |
+| 480p | 9 | 21 | 23 | 43 |
+| 720p | 7 | 10 | 15 | 32 |
+| 1080p | 4 | 6 | 9 | 18 |
+| ABR<br />(1080p + 720p + 480p) | 2 | 3 | 5 | 10 |
+
+:::info[About transcoding]
+Transcoding numbers are much lower than ingest and playback. Software transcoding on the CPU (x264) spends a lot of CPU on decoding and encoding every channel, which limits how many channels one server can handle. With a three-rendition ABR ladder, the results were only 2 channels on c5.2xlarge, 3 on c5.4xlarge, 5 on the Dell R350, and 10 on the Supermicro.
+
+The next post will cover how many channels a single server can handle with hardware transcoding on **NETINT VPUs** and **NVIDIA GPUs**.
+:::
+
+## Conclusion
+
+These measurements replace "it depends" with a concrete baseline: with this kind of hardware, you can expect roughly this much. Whether you run your own bare-metal servers or are choosing an instance type on AWS, these numbers can help you size your deployment.
+
+Of course, real-world results will vary with your hardware, network, and stream settings. Use these results as a starting point, and validate them in the environment you plan to run.
+
+Thank you.
