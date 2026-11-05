@@ -7,7 +7,8 @@ sidebar_position: 126
 
 OvenMediaEngine Enterprise exposes its runtime metrics at `/v2/metrics` in the [OpenMetrics](https://openmetrics.io/) 1.0.0 exposition format. It is a vendor-neutral, pull-based text format that any OpenMetrics-compatible monitoring system can read.
 
-The response is rendered on demand from the live monitoring model and is read-only: scraping never changes collection state.
+The response is rendered on demand from the live monitoring model.
+Scraping never changes collection state, except that each scrape is itself counted as an HTTP request (`handler="api"`, `kind="metrics"`) when [HTTP request timing](#http-request-timing) is enabled.
 
 ## Endpoint
 
@@ -78,17 +79,18 @@ Metrics are grouped into collectors. Select a subset with repeated query keys (t
 
 Collector names are lowercase. An unknown name returns `400` with the list of valid names. A request with no selection emits all default collectors.
 
-| Collector         | Emits                                                                              | In default scrape |
-| ----------------- | ---------------------------------------------------------------------------------- | ----------------- |
-| `core`            | Build info, process start time                                                     | Always on         |
-| `traffic`         | Received/transmitted byte counters                                                 | Yes               |
-| `connection`      | Current connection gauges                                                          | Yes               |
-| `stream`          | Media/track characteristics, source timing, ingest RTT, and SRT ingest packet loss | Yes               |
-| `queue`           | Managed-queue gauges and counters                                                  | Yes               |
-| `push`            | Push/record byte counters and state                                                | Yes               |
-| `session`         | Per-session byte counter, throughput, RTT, and SRT egress packet loss              | No (opt-in)       |
-| `frame_latency`   | Per-track frame latency histograms                                                 | Yes               |
-| `session_latency` | Per-session WebRTC egress latency (count and sum)                                  | No (opt-in)       |
+| Collector         | Emits                                                                                      | In default scrape |
+| ----------------- | ------------------------------------------------------------------------------------------ | ----------------- |
+| `core`            | Build info, process start time                                                             | Always on         |
+| `traffic`         | Received/transmitted byte counters                                                         | Yes               |
+| `connection`      | Current connection gauges                                                                  | Yes               |
+| `stream`          | Media/track characteristics, source timing, ingest RTT, and SRT ingest packet loss         | Yes               |
+| `queue`           | Managed-queue gauges and counters                                                          | Yes               |
+| `push`            | Push/record byte counters and state                                                        | Yes               |
+| `session`         | Per-session byte counter, throughput, RTT, SRT egress packet loss, and HTTP request timing | No (opt-in)       |
+| `frame_latency`   | Per-track frame latency histograms                                                         | Yes               |
+| `session_latency` | Per-session WebRTC egress latency (count and sum)                                          | No (opt-in)       |
+| `http`            | HTTP request timing, unanswered requests, and requests in progress                         | Yes               |
 
 `core` is always emitted regardless of the selection.
 
@@ -132,10 +134,10 @@ The `push` families carry their own `protocol` label for the protocol of that pu
 
 ### `traffic`
 
-| Metric                     | Type    | Description                                                                                 |
-| -------------------------- | ------- | ------------------------------------------------------------------------------------------- |
-| `ome_receive_bytes_total`  | counter | Media bytes received from the provider for this stream (excludes protocol/socket overhead). |
-| `ome_transmit_bytes_total` | counter | Media bytes transmitted to subscribers, by `publisher`.                                     |
+| Metric                     | Type    | Description                                                                                                                                                                                                                        |
+| -------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ome_receive_bytes_total`  | counter | Media bytes received from the provider for this stream (excludes protocol/socket overhead).                                                                                                                                        |
+| `ome_transmit_bytes_total` | counter | Bytes transmitted to subscribers, by `publisher`. Each publisher counts at its own layer, some with protocol headers (whole HTTP responses for LL-HLS, whole RTP packets for WebRTC), so compare values only within one publisher. |
 
 ### `connection`
 
@@ -163,15 +165,15 @@ The `push` families carry their own `protocol` label for the protocol of that pu
 
 ### `queue`
 
-| Metric                                 | Type    | Description                                      |
-| -------------------------------------- | ------- | ------------------------------------------------ |
-| `ome_queue_size`                       | gauge   | Current number of messages in the managed queue. |
-| `ome_queue_peak`                       | gauge   | Peak number of messages observed.                |
-| `ome_queue_threshold`                  | gauge   | Configured message-count threshold.              |
-| `ome_queue_dropped_total`              | counter | Total messages dropped by the queue.             |
-| `ome_queue_input_messages_per_second`  | gauge   | Messages enqueued per second.                    |
-| `ome_queue_output_messages_per_second` | gauge   | Messages dequeued per second.                    |
-| `ome_queue_waiting_seconds`            | gauge   | Average time a message waits in the queue.       |
+| Metric                                 | Type    | Description                                                                                                                                                 |
+| -------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ome_queue_size`                       | gauge   | Current number of messages in the managed queue.                                                                                                            |
+| `ome_queue_peak`                       | gauge   | Peak number of messages observed.                                                                                                                           |
+| `ome_queue_threshold`                  | gauge   | Message-count threshold. A time-based threshold and a buffering delay are converted to counts from the current input rate, so the value can change with it. |
+| `ome_queue_dropped_total`              | counter | Total messages dropped by the queue.                                                                                                                        |
+| `ome_queue_input_messages_per_second`  | gauge   | Messages enqueued per second.                                                                                                                               |
+| `ome_queue_output_messages_per_second` | gauge   | Messages dequeued per second.                                                                                                                               |
+| `ome_queue_waiting_seconds`            | gauge   | Exponentially weighted moving average of the time a dequeued message waited in the queue.                                                                   |
 
 ### `push`
 
@@ -182,18 +184,20 @@ The `push` families carry their own `protocol` label for the protocol of that pu
 
 ### `session` (opt-in)
 
-| Metric                                        | Type    | Description                                                                                                           |
-| --------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------- |
-| `ome_session_transmit_bytes_total`            | counter | Media bytes transmitted to this subscriber session.                                                                   |
-| `ome_session_transmit_bps`                    | gauge   | Current transmit throughput to the session, in bits per second.                                                       |
-| `ome_session_rtt_seconds`                     | gauge   | Per-session round-trip time, split by `publisher` and `method`. See [Round-trip time](#round-trip-time).              |
-| `ome_session_srt_lost_packets_total`          | counter | SRT egress: packets the subscriber reported lost via NAK. SRT sessions only. See [SRT packet loss](#srt-packet-loss). |
-| `ome_session_srt_retransmitted_packets_total` | counter | SRT egress: packets retransmitted to the subscriber. SRT sessions only.                                               |
-| `ome_session_srt_dropped_packets_total`       | counter | SRT egress: packets dropped too-late-to-send (TLPKTDROP). SRT sessions only.                                          |
+| Metric                                        | Type    | Description                                                                                                                                                                                                |
+| --------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ome_session_transmit_bytes_total`            | counter | Bytes transmitted to this subscriber session, counted as for `ome_transmit_bytes_total`.                                                                                                                   |
+| `ome_session_transmit_bps`                    | gauge   | Current transmit throughput to the session, in bits per second.                                                                                                                                            |
+| `ome_session_rtt_seconds`                     | gauge   | Per-session round-trip time, split by `publisher` and `method`. See [Round-trip time](#round-trip-time).                                                                                                   |
+| `ome_session_srt_lost_packets_total`          | counter | SRT egress: packets the subscriber reported lost via NAK. SRT sessions only. See [SRT packet loss](#srt-packet-loss).                                                                                      |
+| `ome_session_srt_retransmitted_packets_total` | counter | SRT egress: packets retransmitted to the subscriber. SRT sessions only.                                                                                                                                    |
+| `ome_session_srt_dropped_packets_total`       | counter | SRT egress: packets dropped too-late-to-send (TLPKTDROP). SRT sessions only.                                                                                                                               |
+| `ome_session_http_request_duration_seconds`   | summary | LL-HLS and HLS sessions: count and sum of `ome_http_request_duration_seconds` for the requests this session served, by `kind`, `held`, and `status_code`. See [HTTP request timing](#http-request-timing). |
+| `ome_session_http_request_processing_seconds` | summary | LL-HLS sessions: count and sum of `ome_http_request_processing_seconds` for the requests this session served.                                                                                              |
 
 ### Frame latency
 
-When `Modules > FrameLatency` is enabled, OvenMediaEngine records when each frame passes four points and reports the time between them.
+When `Modules > Measurements > FrameLatency` is enabled, OvenMediaEngine records when each frame passes four points and reports the time between them.
 
 | Point | Where                                                                                                                                                                                            |
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -223,7 +227,7 @@ Where each span is reported:
 
 `ingest`, `relay`, and `end_to_end` need all of the following:
 
-1. `Modules > FrameLatency` is enabled on the origin, so that it sends `[1]` and `[2]`, and on every edge, so that it records the spans.
+1. `Modules > Measurements > FrameLatency` is enabled on the origin, so that it sends `[1]` and `[2]`, and on every edge, so that it records the spans.
    With only the edge enabled, the edge reports only `egress`.
    With only the origin enabled, the edge reports nothing.
 2. The edge is connected to the origin over OVT2.
@@ -244,11 +248,13 @@ If a span has no series:
 ```xml
 <Server>
     <Modules>
-        <FrameLatency>
-            <Enable>true</Enable>
-            <!-- Optional. Testing and diagnostics only -->
-            <Buckets>0.001,0.005,0.01,0.02,0.03,0.05,0.07,0.1,0.15,0.2,0.3,0.5,1,3</Buckets>
-        </FrameLatency>
+        <Measurements>
+            <FrameLatency>
+                <Enable>true</Enable>
+                <!-- Optional. Testing and diagnostics only -->
+                <Buckets>0.001,0.005,0.01,0.02,0.03,0.05,0.07,0.1,0.15,0.2,0.3,0.5,1,3</Buckets>
+            </FrameLatency>
+        </Measurements>
     </Modules>
 </Server>
 ```
@@ -259,6 +265,9 @@ If a span has no series:
   Each bound is between `0.0001` and `3600` with at most 6 decimal places, and the list holds at most 30 bounds.
   The default is the list above.
   An invalid list is a configuration error, and the server does not start.
+
+`<Modules><FrameLatency>` from earlier releases still works and logs a deprecation warning at startup.
+Setting it there and under `<Measurements>` at the same time is a configuration error, and the server does not start.
 
 To stop an origin from sending `[1]` and `[2]` for one application, set `<OVT><FrameLatency><Enable>false</Enable></FrameLatency></OVT>` under that application's `<Publishers>`.
 It defaults to `true`, so there is nothing to set otherwise.
@@ -282,13 +291,14 @@ If you change `<Buckets>`:
 - The histograms keep a count per bucket, not individual values.
   For the largest value in a period and when it happened, use the `FrameLatency` log below.
 - `_count` plus the `..._excluded_observations_total` series is every observation of the span.
+  For `ingest`, `relay`, and `end_to_end`, counting starts at the first frame that carries the times of the server this edge pulls from; frames before it are in neither.
   An observation is left out of the histogram for one of two reasons:
   - `reason="negative"`: the span came out negative, which happens when the servers' clocks disagree or a clock is stepped back.
     If it keeps rising, synchronize the clocks; `relay` and `end_to_end` are not reliable until then.
-  - `reason="unmeasured"`: the track had received the origin's times before, but this frame arrived without them.
+  - `reason="unmeasured"`: this frame arrived without the times of the server this edge pulls from, although earlier frames of the track had them.
 
 For the exact value and time of an outlier, enable the `FrameLatency` log tag at `debug` level in `Logger.xml`.
-It writes one line per track per second, starting with the second it covers as `sec=<Unix seconds>` and the time since the previous line as `w=<milliseconds>`, and then these fields for each span the track has measured:
+It writes one line per track per second, starting with the stream and the track, then the second it covers as `sec=<Unix seconds>` and the time since the previous line as `w=<milliseconds>`, and then these fields for each span the track has measured:
 
 | Field        | Meaning                                                                                                                                          |
 | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -321,24 +331,122 @@ In the rare second whose frames left no maximum that could be read, `max` is wri
 
 ### `frame_latency`
 
-Empty unless `Modules > FrameLatency` is enabled. See [Frame latency](#frame-latency) for the points and spans.
+Empty unless `Modules > Measurements > FrameLatency` is enabled. See [Frame latency](#frame-latency) for the points and spans.
 
-| Metric                                                 | Type      | Description                                                                                                                                            |
-| ------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ome_track_ingest_latency_seconds`                     | histogram | `ingest`: the origin receiving the frame to writing it to this edge. One observation per frame.                                                        |
-| `ome_track_relay_latency_seconds`                      | histogram | `relay`: the origin writing the frame to this edge receiving its first fragment. One observation per frame.                                            |
-| `ome_track_egress_latency_seconds`                     | histogram | `egress`: this server receiving the frame to handing its last RTP packet to the send path of a WebRTC viewer. One observation per frame per viewer.    |
-| `ome_track_end_to_end_latency_seconds`                 | histogram | `end_to_end`: the origin receiving the frame to handing its last RTP packet to the send path of a WebRTC viewer. One observation per frame per viewer. |
-| `ome_track_<span>_latency_excluded_observations_total` | counter   | Observations of a span left out of its histogram, by `reason`: `negative` or `unmeasured` (`egress` has only `negative`).                              |
-| `ome_frame_latency_buckets_info`                       | info      | The histogram bounds this server uses, in the `bounds` label. Emitted only while at least one stream is in scope.                                      |
+| Metric                                                 | Type      | Description                                                                                                                                                                             |
+| ------------------------------------------------------ | --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ome_track_ingest_latency_seconds`                     | histogram | `ingest`: the server this edge pulls from receiving the frame to writing it to this edge. One observation per frame.                                                                    |
+| `ome_track_relay_latency_seconds`                      | histogram | `relay`: the server this edge pulls from writing the frame to this edge receiving its first fragment. One observation per frame.                                                        |
+| `ome_track_egress_latency_seconds`                     | histogram | `egress`: this server receiving the frame to handing its last RTP packet to the send path of a WebRTC viewer. One observation per frame per viewer.                                     |
+| `ome_track_end_to_end_latency_seconds`                 | histogram | `end_to_end`: the server this edge pulls from receiving the frame to this server handing its last RTP packet to the send path of a WebRTC viewer. One observation per frame per viewer. |
+| `ome_track_<span>_latency_excluded_observations_total` | counter   | Observations of a span left out of its histogram, by `reason`: `negative` or `unmeasured` (`egress` has only `negative`).                                                               |
+| `ome_frame_latency_buckets_info`                       | info      | The histogram bounds this server uses, in the `bounds` label. Emitted only while at least one stream is in scope.                                                                       |
 
 ### `session_latency` (opt-in)
 
-Empty unless `Modules > FrameLatency` is enabled. Covers WebRTC viewer sessions only.
+Empty unless `Modules > Measurements > FrameLatency` is enabled. Covers WebRTC viewer sessions only.
 
 | Metric                               | Type    | Description                                                                                                                                                     |
 | ------------------------------------ | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ome_session_egress_latency_seconds` | summary | This WebRTC viewer's own `egress` span, per track, as `_count` and `_sum` (no quantiles). Negative spans are left out. Up to 32 tracks per session are counted. |
+
+### HTTP request timing
+
+OvenMediaEngine times every HTTP request it serves on its HTTP ports (LL-HLS, HLS, thumbnails, WHIP, the REST API, and `/v2/metrics` itself), from the moment the request arrives to the moment OvenMediaEngine starts sending the response.
+WebSocket connections, such as WebRTC signalling, are not timed.
+A request is counted once its headers are complete, so a connection that closes before that is not counted.
+Each request, and each stream of an HTTP/2 connection, is recorded once: as answered, as unanswered with a reason, or, until then, as in progress.
+
+- Timing starts when the HTTP layer has the first data of the request: for HTTP/1.1 the first piece it reads, and for HTTP/2 the first complete frame of the stream, usually its HEADERS frame.
+- Included: receiving the rest of the request, waiting in a stream worker queue, and anything OvenMediaEngine waits for while handling the request, such as an admission webhook or an edge pulling the stream from its origin.
+- Not included: connection setup, receiving and decrypting that first data, sending the response (header serialization, TLS encryption, the network, and the client's download), and the idle time between requests on a keep-alive connection.
+
+So the value is a lower bound of the time to first byte a player sees.
+
+LL-HLS defers a request for a playlist or part that does not exist yet until it does (blocking playlist reload and preload hints).
+Such a request has `held="true"`, and its wait is normal.
+For LL-HLS, `ome_http_request_processing_seconds` starts when the request became due, which for a held request is when the playlist update that woke it was made, so it shows how long OvenMediaEngine took to answer once it could, including the wait for a worker to pick that update up.
+For a request that was not held, the processing time equals the duration.
+
+| Label         | Values                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `handler`     | The handler that took the request: `llhls`, `hlsv3`, `thumbnail`, `whip`, `api`, or `none` when no handler matched and the server answered `404`. `unknown` is not expected and means a handler that is not tagged.                                                                                                                                                                                      |
+| `kind`        | `llhls`: `master_playlist`, `media_playlist`, `partial_segment`, `segment`, `init_segment`. `hlsv3`: `master_playlist`, `media_playlist`, `segment`. `thumbnail`: `image`. `whip`: `offer` (POST), `ice` (PATCH), `teardown` (DELETE). `api`: `rest`, or `metrics` for any `/v2/metrics` path. Any handler: `preflight` (OPTIONS). `other` for a request the rules above do not match (never for `api`). |
+| `held`        | `true` when LL-HLS deferred the request until its media existed.                                                                                                                                                                                                                                                                                                                                         |
+| `status_code` | The status code sent, or `other` for a code OvenMediaEngine does not define. Answered requests only.                                                                                                                                                                                                                                                                                                     |
+| `reason`      | `ome_http_requests_unanswered_total` only: `cancelled` (HTTP/2 `RST_STREAM`), `connection_closed`, `send_failed`, or `dropped` (OvenMediaEngine discarded the request, for example because the stream stopped while the request was held).                                                                                                                                                               |
+
+- The histograms, `ome_http_requests_unanswered_total`, and `ome_http_requests_in_progress` cover the whole server and appear only on the root path, `/v2/metrics`, so scraping several paths does not count them twice.
+- The per-stream summaries count only the requests matched to a stream.
+  The other requests are in the histograms only, such as a CORS preflight, a request that a signed policy or an admission webhook rejected, a request for a stream that does not exist, a failed WHIP offer, a WHIP teardown (which deletes its stream), and API requests (`handler="api"`).
+- `ome_http_requests_unanswered_total` has no stream labels, so a request dropped because its stream stopped is still counted after the stream is gone.
+- A stream's series disappear when the stream is deleted, so apply `rate()` before `sum()`.
+- The histogram bounds are fixed: `0.0001`, `0.00025`, `0.0005`, `0.001`, `0.0025`, `0.005`, `0.01`, `0.025`, `0.05`, `0.1`, `0.25`, `0.5`, `1.0`, `2.5`, `5.0`, `10.0`, `30.0`, `60.0` seconds.
+- The server-wide families start with the usual series of each enabled handler, such as `kind="partial_segment"` with `status_code="200"` for LL-HLS.
+  Any other series, and every per-stream and per-session series, appears when its first request is recorded, so `rate()` and `increase()` miss that first increase.
+- `cancelled` is normal for LL-HLS, because players cancel preload hints, and `connection_closed` rises when a viewer leaves with a request outstanding, which an LL-HLS viewer almost always has; `dropped` is the reason to alert on.
+- `ome_http_requests_in_progress{handler="api"}` is at least 1, because the scrape itself is in progress.
+- When a stream stops, a request it had queued but not handled yet ends as `dropped` on HTTP/1.1, but on HTTP/2 it stays in progress until the player cancels it (`cancelled`) or closes the connection (`connection_closed`).
+- With `StreamWorkerCount` set to `0`, a request LL-HLS holds when its stream stops ends as `connection_closed` when the player leaves, instead of `dropped`.
+- The `Elapsed` value that the `HTTP.Server` log tag writes when a request ends (at `trace` level, or `error` for a status other than 2xx and 3xx) is measured on the wall clock up to the start of the last response write, so it does not match these values exactly.
+
+The `HTTP.Timing` log tag names the requests behind the numbers.
+
+- At the default `info` level, every 10-second window that had a dropped request, or a request over 0.25 seconds in processing time for LL-HLS and in duration for other handlers, gets a `warn` line per `handler`, `kind`, and `held`.
+  The line has the counts (`slow`, `dropped`) and the slowest request, or one dropped request: its `id`, the status and `total`/`wait`/`processing` in milliseconds (`waited` for a dropped request), arrival time, stream, session, client, HTTP version, method, and path.
+  A field the log does not know is `-`: `stream` and `session` for a request not matched to one, and for some dropped requests also `id`, arrival time, client, HTTP version, method, and path.
+  The `slow` counts add up to `_count - _bucket{le="0.25"}` of the processing histogram for LL-HLS and of the duration histogram for the other handlers.
+  The windows are 10 seconds long but not aligned to the clock, so the time a line names can be any second.
+- With the tag at `debug`, every 1-second window in which a `handler`, `kind`, and `held` had answered requests also gets a line, starting with those three and then the second in which the window starts as `sec=<Unix seconds>` and the time since the previous line as `w=<milliseconds>`:
+
+| Field   | Meaning                                                                                                                                                              |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `n`     | Requests answered in that window                                                                                                                                     |
+| `max`   | The longest time in that window, in milliseconds (processing time for LL-HLS, duration for other handlers), with the request `id`, `status`, `stream`, and `session` |
+| `count` | The histogram `_count` when the line was written, summed over status codes                                                                                           |
+| `d`     | What `_count` added since the previous line                                                                                                                          |
+| `mean`  | The mean of the values added since the previous line, in milliseconds                                                                                                |
+| `b`     | The buckets filled since the previous line, as `<upper bound in seconds>:<requests>` (only the ones that are not zero)                                               |
+
+The first line of a `handler`, `kind`, and `held` has no `w` and covers everything since the server started, so the `d` of all its lines add up to its `count`.
+Query strings are not logged, except the LL-HLS directives `_HLS_msn` and `_HLS_part`, because a query string can carry secrets such as signed policy tokens.
+
+```text
+Slow HTTP requests in 14:22:57 +10s: handler=llhls kind=partial_segment held=true slow=37 dropped=0 max: id=Ab3xK9q status=200 total=812.4ms wait=430.1ms processing=382.3ms arrived=14:23:05.900 stream=default/app/stream session=1830233551 client=203.0.113.7:51234/tcp http=2 GET /app/stream/part_1_2045_3_video_LMOikNC1_llhls.m4s
+llhls/partial_segment held=false sec=1793723164 w=1001ms: n=1 max=0.3ms (id=cql5vwM status=200 stream=default/app/stream session=101) count=20 d=1 mean=0.3ms b=0.0005:1
+```
+
+#### Configuration
+
+```xml
+<Server>
+    <Modules>
+        <Measurements>
+            <HTTPRequestTiming>
+                <Enable>true</Enable>
+            </HTTPRequestTiming>
+        </Measurements>
+    </Modules>
+</Server>
+```
+
+- `<Enable>` (default `false`): turns the timing on for the whole server.
+  While it is off, no request is timed, and neither the `http` families nor the `HTTP.Timing` lines are written.
+  It is read at startup, so a change takes effect after a restart.
+
+### `http`
+
+Empty unless `Modules > Measurements > HTTPRequestTiming` is enabled.
+See [HTTP request timing](#http-request-timing) for what is measured and the labels.
+
+| Metric                                       | Type      | Description                                                                                                                                                    |
+| -------------------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ome_http_request_duration_seconds`          | histogram | Time from a request arriving to the start of its response, server-wide, by `handler`, `kind`, `held`, and `status_code`. Includes LL-HLS waits.                |
+| `ome_http_request_processing_seconds`        | histogram | LL-HLS only: time from the request becoming due (when it arrived, or when the playlist update that woke a held request was made) to the start of its response. |
+| `ome_stream_http_request_duration_seconds`   | summary   | Per-stream count and sum of `ome_http_request_duration_seconds`, for the requests matched to the stream (no quantiles).                                        |
+| `ome_stream_http_request_processing_seconds` | summary   | Per-stream count and sum of `ome_http_request_processing_seconds` (LL-HLS only).                                                                               |
+| `ome_http_requests_unanswered_total`         | counter   | Requests that ended before OvenMediaEngine finished sending the response, server-wide, by `reason`. Not counted in the histograms.                             |
+| `ome_http_requests_in_progress`              | gauge     | Requests that have arrived and not yet been answered or ended, by `handler`. Includes held LL-HLS requests and the scrape that reads the value.                |
 
 ### Round-trip time
 
@@ -425,6 +533,27 @@ histogram_quantile(0.95, sum by (le, media) (rate(ome_track_end_to_end_latency_s
 
 # Frame latency alert: more than 10 frames above 500 ms in 2 minutes
 increase(ome_track_end_to_end_latency_seconds_count[2m]) - ignoring(le) increase(ome_track_end_to_end_latency_seconds_bucket{le="0.5"}[2m]) > 10
+
+# HTTP: requests slower than 250 ms per minute, by handler and kind
+# (processing time for LL-HLS, whose held requests wait by design, and duration for the other handlers)
+(
+  sum by (handler, kind) (increase(ome_http_request_processing_seconds_count[1m]))
+  - sum by (handler, kind) (increase(ome_http_request_processing_seconds_bucket{le="0.25"}[1m]))
+)
+or
+(
+  sum by (handler, kind) (increase(ome_http_request_duration_seconds_count{handler!="llhls"}[1m]))
+  - sum by (handler, kind) (increase(ome_http_request_duration_seconds_bucket{handler!="llhls", le="0.25"}[1m]))
+)
+
+# HTTP: 99th percentile processing time of LL-HLS parts
+histogram_quantile(0.99, sum by (le) (rate(ome_http_request_processing_seconds_bucket{kind="partial_segment"}[5m])))
+
+# HTTP: mean processing time per stream
+sum by (vhost, app, stream) (rate(ome_stream_http_request_processing_seconds_sum[5m])) / sum by (vhost, app, stream) (rate(ome_stream_http_request_processing_seconds_count[5m]))
+
+# HTTP: requests OvenMediaEngine dropped
+sum by (handler, kind) (increase(ome_http_requests_unanswered_total{reason="dropped"}[5m])) > 0
 ```
 
 Stream-level series (`ome_connections`, `ome_receive_bytes_total`, `ome_transmit_bytes_total`, `ome_stream_rtt_seconds`) are emitted both for the input stream and for each output rendition. Match `output_stream=""` to select the input-side aggregate once and avoid double-counting across renditions.
@@ -437,19 +566,21 @@ If the scraper sends `Accept-Encoding: gzip`, the response is gzip-compressed an
 
 The output conforms to OpenMetrics 1.0.0:
 
-- One `# HELP` and `# TYPE` line per metric family.
-- Counters end with `_total`; values use base units (`_bytes`, `_seconds`).
+- One `# TYPE` line per metric family, followed by `# UNIT` when the family has a unit, then `# HELP`.
+- Counter samples end with `_total` and info samples with `_info`; the family name on the `#` lines has no such suffix.
+- Values use base units (`_bytes`, `_seconds`).
 - No per-sample timestamps.
 - The document is terminated by a single `# EOF` line.
 
 A minimal scrape looks like:
 
 ```text
-# HELP ome_build_info OvenMediaEngine build information.
-# TYPE ome_build_info info
+# TYPE ome_build info
+# HELP ome_build OvenMediaEngine build information.
 ome_build_info{version="...",git_version="..."} 1
-# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
 # TYPE process_start_time_seconds gauge
+# UNIT process_start_time_seconds seconds
+# HELP process_start_time_seconds Start time of the process since unix epoch in seconds.
 process_start_time_seconds 1783445283.19
 # EOF
 ```
