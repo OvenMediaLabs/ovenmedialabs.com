@@ -386,8 +386,7 @@ For a request that was not held, the processing time equals the duration.
   Any other series, and every per-stream and per-session series, appears when its first request is recorded, so `rate()` and `increase()` miss that first increase.
 - `cancelled` is normal for LL-HLS, because players cancel preload hints, and `connection_closed` rises when a viewer leaves with a request outstanding, which an LL-HLS viewer almost always has; `dropped` is the reason to alert on.
 - `ome_http_requests_in_progress{handler="api"}` is at least 1, because the scrape itself is in progress.
-- When a stream stops, a request it had queued but not handled yet ends as `dropped` on HTTP/1.1, but on HTTP/2 it stays in progress until the player cancels it (`cancelled`) or closes the connection (`connection_closed`).
-- With `StreamWorkerCount` set to `0`, a request LL-HLS holds when its stream stops ends as `connection_closed` when the player leaves, instead of `dropped`.
+- When a stream stops, a request it had queued but not handled yet ends as `dropped` on HTTP/1.1, and so does a request LL-HLS holds when `StreamWorkerCount` is `0`; on HTTP/2 both stay in progress until the player cancels them (`cancelled`) or the connection closes (`connection_closed`).
 - The `Elapsed` value that the `HTTP.Server` log tag writes when a request ends (at `trace` level, or `error` for a status other than 2xx and 3xx) is measured on the wall clock up to the start of the last response write, so it does not match these values exactly.
 
 The `HTTP.Timing` log tag names the requests behind the numbers.
