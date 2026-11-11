@@ -2582,3 +2582,135 @@ html.plugin-blog.blog-post-page .theme-blog-footer-edit-meta-row [class*='tag_']
     width: 30%;
   }
 }
+
+/* Announcement Banner */
+.ann-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--text-sub), transparent 70%);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  animation: ann-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+@keyframes ann-slide-in {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.ann-banner-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 12px;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: background 0.15s;
+}
+
+.ann-banner-link:hover {
+  background: color-mix(in srgb, var(--bg-middle), transparent 40%);
+}
+
+.ann-banner-link:hover .ann-banner-arrow {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.ann-banner-thumb {
+  width: 72px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 7px;
+  flex-shrink: 0;
+}
+
+.ann-banner-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ann-banner-label {
+  font-size: 0.63rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--company-primary);
+}
+
+.ann-banner-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ann-banner-arrow {
+  color: var(--text-sub);
+  opacity: 0.5;
+  transition: opacity 0.15s, transform 0.15s;
+  flex-shrink: 0;
+}
+
+.ann-banner-footer {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid color-mix(in srgb, var(--text-sub), transparent 80%);
+  padding: 6px 10px 6px 14px;
+}
+
+.ann-banner-snooze {
+  background: none;
+  border: none;
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  cursor: pointer;
+  padding: 2px 0;
+  flex: 1;
+  text-align: left;
+  transition: color 0.15s;
+}
+
+.ann-banner-snooze:hover { color: var(--text-main); }
+
+.ann-banner-close {
+  background: none;
+  border: none;
+  color: var(--text-sub);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.ann-banner-close:hover {
+  color: var(--text-main);
+  background: color-mix(in srgb, var(--text-sub), transparent 80%);
+}
+
+@media (max-width: 480px) {
+  .ann-banner {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+  }
+}
