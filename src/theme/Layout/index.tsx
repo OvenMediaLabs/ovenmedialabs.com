@@ -3,6 +3,7 @@ import OriginalLayout from '@theme-original/Layout';
 import type {Props} from '@theme/Layout';
 import Head from '@docusaurus/Head';
 import {useLocation} from '@docusaurus/router';
+import AnnouncementBanner from '@site/src/components/AnnouncementBanner';
 
 function isBlogListPath(pathname: string): boolean {
   return (
@@ -17,11 +18,11 @@ function isBlogListPath(pathname: string): boolean {
 export default function Layout({title, children, ...props}: Props): React.ReactNode {
   const {pathname} = useLocation();
   const showBlogListTitle = isBlogListPath(pathname);
-
   return (
     <OriginalLayout title={title} {...props}>
       {children}
       {showBlogListTitle && <Head><title>OvenMedia Blog | OvenMediaEngine Team's Insights</title></Head>}
+      <AnnouncementBanner />
     </OriginalLayout>
   );
 }
