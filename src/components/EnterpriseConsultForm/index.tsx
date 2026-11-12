@@ -4,9 +4,10 @@ const ENDPOINT = 'https://form-api.ovenmedia.com/api/forms/enterprise-consult';
 
 const LICENSE = 'OvenMediaEngine Enterprise License';
 const SUPPORT = 'Enterprise Support Program';
-const X264   = 'x264 Add-on';
+const X264    = 'x264 Add-on';
+const NETINT  = 'NETINT Quadra VPU Demo';
 
-const INTERESTS = [LICENSE, SUPPORT, X264];
+const INTERESTS = [LICENSE, SUPPORT, X264, NETINT];
 
 type Status = 'idle' | 'submitting' | 'ok' | 'error';
 
@@ -32,6 +33,7 @@ export default function EnterpriseConsultForm(): React.ReactElement {
       license: [LICENSE],
       x264:    [X264, LICENSE],
       support: [SUPPORT, LICENSE],
+      'netint-demo': [NETINT],
     };
     const preset = param ? MAP[param] : undefined;
     if (preset) setInterests(preset);
@@ -40,8 +42,8 @@ export default function EnterpriseConsultForm(): React.ReactElement {
   const toggleInterest = (t: string) => {
     setInterests((prev) => {
       if (prev.includes(t)) {
-        // Deselecting Enterprise License clears all dependents too
-        if (t === LICENSE) return [];
+        // Deselecting Enterprise License clears its dependents (x264, Support) but not standalone items
+        if (t === LICENSE) return prev.filter((x) => x !== LICENSE && x !== X264 && x !== SUPPORT);
         return prev.filter((x) => x !== t);
       }
       // Selecting x264 or Support Program also ensures License is selected
@@ -201,7 +203,9 @@ export default function EnterpriseConsultForm(): React.ReactElement {
           </label>
           <textarea className="consult-input consult-textarea" id="ecf-message" name="message"
             rows={5} maxLength={10000}
-            placeholder="Tell us briefly about your service, requirements, or any questions you may have." />
+            placeholder={interests.includes(NETINT)
+              ? 'Tell us about your streaming workload, expected channel count, codecs, and deployment environment.'
+              : 'Tell us briefly about your service, requirements, or any questions you may have.'} />
         </div>
 
         {/* honeypot: hidden from humans, catches bots */}
