@@ -319,7 +319,7 @@ listed here have no version-gated options beyond their minimum version above.
 
 - **0.18.2.1**: `/v2/stats/*` statistics APIs
 - **0.20.0.0**: Supported-codecs query API (`/v2` internals)
-- **0.21.1.0**: Stream response (`input`) includes a `connection` object with transport, protocol, and address details for each ingest stream
+- **0.21.1.0**: Stream response (`input`) includes a `connection` object with transport, protocol, and address details for each stream pushed directly over WebRTC, RTMP, SRT, or MPEG-TS
 - **0.21.2.0**: Stream information reports each video track's codec `profile`, `level`, `tier`, `bitDepth`, and RFC 6381 `codecs` string (also included in TranscodeWebhook requests and Alert payloads)
 
 ### Image Overlay
