@@ -19,7 +19,7 @@ OS_SERVER_HTTP_PORT=8080
 
 LOG_DIR=/var/log/ovenmediaengine/ovenstudio
 
-JAVA_HOME=/usr/share/ovenmediaengine/ovenstudio/jvm/jdk-17.0.10+7-jre
+JAVA_HOME=/usr/share/ovenmediaengine/ovenstudio/jvm/jre
 ```
 
 
@@ -34,7 +34,7 @@ If you have configured the Host IP, the following additional information is incl
 
 ### Environment Variables
 
-<table><thead><tr><th width="239">Env</th><th>Default Value</th></tr></thead><tbody><tr><td>OS_SERVER_PORT</td><td>⚠️ <strong>Deprecated since 0.20.7.1.</strong> Use <code>OS_SERVER_HTTP_PORT</code> instead.</td></tr><tr><td>OS_SERVER_HTTP_ENABLED</td><td>Enable HTTP for Web Console: `true`. Set to `false` to disable HTTP serving.</td></tr><tr><td>OS_SERVER_HTTP_PORT</td><td>HTTP service port where Web Console will run: `8080`</td></tr><tr><td>OS_SERVER_HTTPS_ENABLED</td><td>Enable HTTPS for Web Console: `false`</td></tr><tr><td>OS_SERVER_HTTPS_PORT</td><td>HTTPS service port where Web Console will run: `8443`</td></tr><tr><td>OS_SERVER_HTTPS_CERT</td><td>(required / no default) Path to the SSL certificate file when HTTPS is enabled, for example: `/path/to/cert.crt`</td></tr><tr><td>OS_SERVER_HTTPS_KEY</td><td>(required / no default) Path to the SSL private key file when HTTPS is enabled, for example: `/path/to/cert.key`</td></tr><tr><td>OS_SERVER_HTTPS_CHAIN_CERT</td><td>(required / no default) Path to the SSL chain certificate file when HTTPS is enabled, for example: `/path/to/chain.crt`</td></tr><tr><td>LOG_DIR</td><td>Log storage path of Web Console: `/var/log/ovenmediaengine/ovenstudio`</td></tr><tr><td>JAVA_HOME</td><td>JAVA installation path: `/usr/share/ovenmediaengine/ovenstudio/jvm/jdk-17.0.10+7-jre`</td></tr><tr><td>OME_HOST_IP</td><td>Host IP of OvenMediaEngine</td></tr></tbody></table>
+<table><thead><tr><th width="239">Env</th><th>Default Value</th></tr></thead><tbody><tr><td>OS_SERVER_PORT</td><td>⚠️ <strong>Deprecated since 0.20.7.1.</strong> Use <code>OS_SERVER_HTTP_PORT</code> instead.</td></tr><tr><td>OS_SERVER_HTTP_ENABLED</td><td>Enable HTTP for Web Console: `true`. Set to `false` to disable HTTP serving.</td></tr><tr><td>OS_SERVER_HTTP_PORT</td><td>HTTP service port where Web Console will run: `8080`</td></tr><tr><td>OS_SERVER_HTTPS_ENABLED</td><td>Enable HTTPS for Web Console: `false`</td></tr><tr><td>OS_SERVER_HTTPS_PORT</td><td>HTTPS service port where Web Console will run: `8443`</td></tr><tr><td>OS_SERVER_HTTPS_CERT</td><td>(required / no default) Path to the SSL certificate file when HTTPS is enabled, for example: `/path/to/cert.crt`</td></tr><tr><td>OS_SERVER_HTTPS_KEY</td><td>(required / no default) Path to the SSL private key file when HTTPS is enabled, for example: `/path/to/cert.key`</td></tr><tr><td>OS_SERVER_HTTPS_CHAIN_CERT</td><td>(required / no default) Path to the SSL chain certificate file when HTTPS is enabled, for example: `/path/to/chain.crt`</td></tr><tr><td>LOG_DIR</td><td>Log storage path of Web Console: `/var/log/ovenmediaengine/ovenstudio`</td></tr><tr><td>JAVA_HOME</td><td>JAVA installation path: `/usr/share/ovenmediaengine/ovenstudio/jvm/jre`</td></tr><tr><td>OME_HOST_IP</td><td>Host IP of OvenMediaEngine</td></tr></tbody></table>
 
 
 :::info
