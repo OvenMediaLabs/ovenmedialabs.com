@@ -1606,7 +1606,10 @@ Anomaly Detection can be configured in `<Server><Alert><Rules>` as shown below:
 
 \= During the last 5 seconds (`CheckDuration`), the number of times no packet was received for 1,000 milliseconds or more (`Threshold`) is 2 or greater (`Count`), the stream is terminated and an alert is sent (`Action`).
 
-<table><thead><tr><th width="139.5555419921875">Key</th><th width="159.5555419921875" align="center">Default (Allowed)</th><th>Description</th></tr></thead><tbody><tr><td>Threshold</td><td align="center">1500<br />(1-2147483647)</td><td><p>The criterion for “By how many milliseconds must no packet be received for it to be regarded as an anomaly?”</p><ul><li>The unit is milliseconds (ms).</li></ul></td></tr></tbody></table>
+One continuous silence is counted once, however long it lasts, and it is reported at most once until the next packet arrives.
+A single silence that lasts at least `MaxSilence` is treated as an anomaly regardless of `Count`, so a stream that stops sending packets while the connection stays open is still detected when `Count` is `2` or greater.
+
+<table><thead><tr><th width="139.5555419921875">Key</th><th width="159.5555419921875" align="center">Default (Allowed)</th><th>Description</th></tr></thead><tbody><tr><td>Threshold</td><td align="center">1500<br />(1-2147483647)</td><td><p>The criterion for “By how many milliseconds must no packet be received for it to be regarded as an anomaly?”</p><ul><li>The unit is milliseconds (ms).</li></ul></td></tr><tr><td>MaxSilence</td><td align="center">Same as <code>CheckDuration</code><br />(0, 1-2147483647)</td><td><p>If a single silence lasts at least this long, it is treated as an anomaly regardless of `Count`.</p><ul><li>The unit is milliseconds (ms).</li><li>If omitted, it is the same as `CheckDuration` converted to milliseconds, but not less than `Threshold`. If `CheckDuration` is `0`, it is not used.</li><li>`0` disables it, so only `Count` is used.</li><li>If specified, it must be an integer that is `0` or at least `Threshold`. Any other value is rejected as a configuration error.</li></ul></td></tr></tbody></table>
 
 
 :::warning
