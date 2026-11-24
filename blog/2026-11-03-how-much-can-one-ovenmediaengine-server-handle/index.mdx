@@ -43,6 +43,16 @@ All machines ran the same OME version (**v0.21.2**), the same configuration, and
 
 ## Test Environment
 
+### Test Setup
+
+Each test targets a single OME server. Load agents send streams to the server (ingest), play streams back from it (playback), and judge each step as pass or fail based on the results.
+
+![Test setup: publish load agents send RTMP, SRT, and WebRTC (WHIP) streams to the OvenMediaEngine server under test, which delivers them over LL-HLS and WebRTC to playback load agents](./test-setup.svg)
+
+- **Ingest tests**: the agents send many streams of the same quality at once. The server only receives them, without transcoding (bypass).
+- **Playback tests**: one stream is published to the server, and the agents increase the number of viewers playing it over WebRTC or LL-HLS.
+- **Transcoding tests**: a 1080p 5 Mbps stream is sent over RTMP, and the server transcodes it with x264 to 480p, 720p, 1080p, or a three-rendition ABR ladder.
+
 ### Servers
 
 | Type | Machine | CPU | Memory | Network |
