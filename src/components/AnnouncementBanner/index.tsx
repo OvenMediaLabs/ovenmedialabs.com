@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {useLocation} from '@docusaurus/router';
 
-const STORAGE_KEY = 'oml_interbee2026';
-const BLOG_SLUG = 'meet-at-interbee2026';
+const STORAGE_KEY = 'oml_benchmark-single-server';
+const BLOG_SLUG = 'how-much-can-one-ovenmediaengine-server-handle';
 const BLOG_URL = `/blog/${BLOG_SLUG}`;
-const BLOG_TITLE = 'Meet OvenMedia Labs at Inter BEE 2026 in Japan!';
-const THUMBNAIL = '/images/blog/interbee2026.png';
+const BLOG_TITLE = 'OvenMediaEngine Performance Benchmark: Single-Server Capacity';
+const THUMBNAIL = '/images/blog/benchmark-single-server.png';
 
 
 export default function AnnouncementBanner(): React.ReactElement | null {
@@ -46,7 +46,7 @@ export default function AnnouncementBanner(): React.ReactElement | null {
       <a href={BLOG_URL} className="ann-banner-link">
         <img src={THUMBNAIL} className="ann-banner-thumb" alt="" aria-hidden="true" />
         <span className="ann-banner-body">
-          <span className="ann-banner-label">Event</span>
+          <span className="ann-banner-label">Benchmark</span>
           <span className="ann-banner-title">{BLOG_TITLE}</span>
         </span>
         <span className="ann-banner-arrow" aria-hidden="true">
