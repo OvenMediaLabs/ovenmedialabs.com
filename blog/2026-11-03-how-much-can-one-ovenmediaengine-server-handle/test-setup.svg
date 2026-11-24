@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 516" width="1260" height="516" font-family="Inter, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <!-- 1U rack server -->
+    <g id="server">
+      <rect x="0" y="0" width="130" height="30" rx="4" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.5"/>
+      <rect x="0.75" y="0.75" width="24" height="28.5" rx="3.5" fill="#2563EB"/>
+      <circle cx="12.75" cy="10" r="2.5" fill="#86EFAC"/>
+      <circle cx="12.75" cy="20" r="2.5" fill="#BFDBFE"/>
+      <g fill="#DBEAFE" stroke="#93C5FD">
+        <rect x="32" y="7" width="12" height="16" rx="1.5"/>
+        <rect x="48" y="7" width="12" height="16" rx="1.5"/>
+        <rect x="64" y="7" width="12" height="16" rx="1.5"/>
+      </g>
+      <g fill="#93C5FD">
+        <circle cx="88" cy="10" r="1.6"/><circle cx="96" cy="10" r="1.6"/><circle cx="104" cy="10" r="1.6"/><circle cx="112" cy="10" r="1.6"/><circle cx="120" cy="10" r="1.6"/>
+        <circle cx="88" cy="15" r="1.6"/><circle cx="96" cy="15" r="1.6"/><circle cx="104" cy="15" r="1.6"/><circle cx="112" cy="15" r="1.6"/><circle cx="120" cy="15" r="1.6"/>
+        <circle cx="88" cy="20" r="1.6"/><circle cx="96" cy="20" r="1.6"/><circle cx="104" cy="20" r="1.6"/><circle cx="112" cy="20" r="1.6"/><circle cx="120" cy="20" r="1.6"/>
+      </g>
+    </g>
+  </defs>
+
+  <rect width="1260" height="516" fill="#FFFFFF"/>
+
+  <!-- Publish agents -->
+  <rect x="30" y="50" width="230" height="416" rx="14" fill="#E8F1FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="145" y="80" text-anchor="middle" font-size="16" font-weight="700" fill="#1E3A8A">Load Agents · Publish</text>
+  <text x="145" y="100" text-anchor="middle" font-size="12" fill="#1E3A8A">RTMP · SRT · WebRTC (WHIP)</text>
+  <use href="#server" x="80" y="145"/>
+  <text x="145" y="195" text-anchor="middle" font-size="13" font-weight="600" fill="#1F2937">Publish Agent 1</text>
+  <use href="#server" x="80" y="269"/>
+  <text x="145" y="319" text-anchor="middle" font-size="13" font-weight="600" fill="#1F2937">Publish Agent 2</text>
+  <use href="#server" x="80" y="393"/>
+  <text x="145" y="443" text-anchor="middle" font-size="13" font-weight="600" fill="#1F2937">Publish Agent N</text>
+
+  <!-- Server under test: hardware chassis -->
+  <rect x="340" y="50" width="580" height="416" rx="10" fill="#E2E8F0" stroke="#64748B" stroke-width="2"/>
+  <rect x="340" y="50" width="580" height="40" rx="10" fill="#0C4A6E"/>
+  <rect x="340" y="76" width="580" height="14" fill="#0C4A6E"/>
+  <text x="630" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Server Under Test</text>
+  <circle cx="884" cy="70" r="3.5" fill="#38BDF8"/>
+  <circle cx="898" cy="70" r="3.5" fill="#22C55E"/>
+
+  <!-- OvenMediaEngine (software) -->
+  <rect x="356" y="102" width="548" height="316" rx="8" fill="#FFFFFF" stroke="#CBD5E1"/>
+  <text x="630" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="#1F2937">OvenMediaEngine</text>
+
+  <!-- OS layer -->
+  <rect x="356" y="428" width="548" height="26" rx="6" fill="#CBD5E1"/>
+  <text x="630" y="445" text-anchor="middle" font-size="12" font-weight="600" fill="#0F172A">Linux Platform</text>
+
+  <!-- Ingest -->
+  <rect x="370" y="142" width="150" height="262" rx="10" fill="#FFFFFF" stroke="#94A3B8"/>
+  <text x="445" y="164" text-anchor="middle" font-size="14" font-weight="700" fill="#1F2937">Ingest</text>
+  <text x="445" y="180" text-anchor="middle" font-size="11" fill="#64748B">(Provider)</text>
+  <rect x="378" y="196" width="134" height="44" rx="8" fill="#EEF2F7" stroke="#64748B"/>
+  <text x="445" y="223" text-anchor="middle" font-size="14" font-weight="600" fill="#1F2937">RTMP</text>
+  <rect x="378" y="262" width="134" height="44" rx="8" fill="#EEF2F7" stroke="#64748B"/>
+  <text x="445" y="289" text-anchor="middle" font-size="14" font-weight="600" fill="#1F2937">SRT</text>
+  <rect x="378" y="328" width="134" height="56" rx="8" fill="#EEF2F7" stroke="#64748B"/>
+  <text x="445" y="352" text-anchor="middle" font-size="14" font-weight="600" fill="#1F2937">WebRTC (WHIP)</text>
+  <text x="445" y="371" text-anchor="middle" font-size="11" fill="#64748B">UDP / TCP / TURN</text>
+
+  <!-- Bypass / Transcoding -->
+  <text x="630" y="188" text-anchor="middle" font-size="11" fill="#64748B">Ingest · Playback tests</text>
+  <rect x="548" y="196" width="164" height="60" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+  <text x="630" y="222" text-anchor="middle" font-size="14" font-weight="700" fill="#1F2937">Bypass</text>
+  <text x="630" y="241" text-anchor="middle" font-size="11" fill="#64748B">No video transcoding</text>
+  <text x="630" y="306" text-anchor="middle" font-size="11" fill="#64748B">Transcoding tests</text>
+  <rect x="548" y="314" width="164" height="60" rx="10" fill="#FFFFFF" stroke="#334155" stroke-width="1.5"/>
+  <text x="630" y="340" text-anchor="middle" font-size="14" font-weight="700" fill="#1F2937">Transcoding</text>
+  <text x="630" y="359" text-anchor="middle" font-size="11" fill="#64748B">480p / 720p / 1080p / ABR</text>
+
+  <!-- Playback -->
+  <rect x="740" y="142" width="150" height="262" rx="10" fill="#FFFFFF" stroke="#94A3B8"/>
+  <text x="815" y="164" text-anchor="middle" font-size="14" font-weight="700" fill="#1F2937">Playback</text>
+  <text x="815" y="180" text-anchor="middle" font-size="11" fill="#64748B">(Publisher)</text>
+  <rect x="748" y="222" width="134" height="44" rx="8" fill="#EEF2F7" stroke="#64748B"/>
+  <text x="815" y="249" text-anchor="middle" font-size="14" font-weight="600" fill="#1F2937">LL-HLS</text>
+  <rect x="748" y="300" width="134" height="44" rx="8" fill="#EEF2F7" stroke="#64748B"/>
+  <text x="815" y="327" text-anchor="middle" font-size="14" font-weight="600" fill="#1F2937">WebRTC</text>
+
+  <!-- Playback agents -->
+  <rect x="1000" y="50" width="230" height="416" rx="14" fill="#E8F1FF" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="1115" y="80" text-anchor="middle" font-size="16" font-weight="700" fill="#1E3A8A">Load Agents · Playback</text>
+  <text x="1115" y="100" text-anchor="middle" font-size="12" fill="#1E3A8A">WebRTC · LL-HLS</text>
+  <use href="#server" x="1050" y="145"/>
+  <text x="1115" y="195" text-anchor="middle" font-size="13" font-weight="600" fill="#1F2937">Playback Agent 1</text>
+  <use href="#server" x="1050" y="269"/>
+  <text x="1115" y="319" text-anchor="middle" font-size="13" font-weight="600" fill="#1F2937">Playback Agent 2</text>
+  <use href="#server" x="1050" y="393"/>
+  <text x="1115" y="443" text-anchor="middle" font-size="13" font-weight="600" fill="#1F2937">Playback Agent N</text>
+
+  <!-- Connections (drawn last so they sit on top) -->
+  <g stroke="#475569" stroke-width="2" fill="none">
+    <line x1="210" y1="160" x2="300" y2="160"/>
+    <line x1="210" y1="284" x2="300" y2="284"/>
+    <line x1="210" y1="408" x2="300" y2="408"/>
+    <line x1="300" y1="159" x2="300" y2="409"/>
+    <line x1="300" y1="284" x2="368" y2="284" marker-end="url(#arrow)"/>
+
+    <line x1="520" y1="226" x2="546" y2="226" marker-end="url(#arrow)"/>
+    <line x1="520" y1="344" x2="546" y2="344" marker-end="url(#arrow)"/>
+    <line x1="712" y1="226" x2="738" y2="226" marker-end="url(#arrow)"/>
+    <line x1="712" y1="344" x2="738" y2="344" marker-end="url(#arrow)"/>
+
+    <line x1="890" y1="284" x2="960" y2="284"/>
+    <line x1="960" y1="159" x2="960" y2="409"/>
+    <line x1="960" y1="160" x2="1048" y2="160" marker-end="url(#arrow)"/>
+    <line x1="960" y1="284" x2="1048" y2="284" marker-end="url(#arrow)"/>
+    <line x1="960" y1="408" x2="1048" y2="408" marker-end="url(#arrow)"/>
+  </g>
+</svg>
